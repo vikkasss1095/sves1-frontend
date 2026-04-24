@@ -109,7 +109,7 @@ export default function Login() {
         {/* --- DEMO HINT FOOTER --- */}
         <div className="mt-4 sm:mt-8 px-5 py-2 bg-black/60 backdrop-blur-md border border-white/5 rounded-full">
             <p className="text-[9px] sm:text-[11px] text-slate-500 tracking-[0.1em] uppercase text-center">
-              Admin: admin@sves1.com | Vendor: vendor@sves1.com
+        
             </p>
         </div>
       </div>
