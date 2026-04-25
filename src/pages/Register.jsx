@@ -152,3 +152,4 @@ export default function Register() {
     </div>
   );
 }
+<h1 style={{ color: "red" }}>NEW BUILD TEST</h1>
