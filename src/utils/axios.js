@@ -1,11 +1,10 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api", // backend URL
+  baseURL: "https://sves1-backend.onrender.com/api", // ✅ LIVE BACKEND
   withCredentials: true,
 });
 
-// 🔐 Request interceptor (JWT token)
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -17,7 +16,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ⚠️ Response interceptor (error handling)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
