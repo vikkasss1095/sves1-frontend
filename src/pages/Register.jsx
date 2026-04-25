@@ -3,14 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../utils/axios";
-
 import bg from "../assets/registerbg.jpg";
 
 export default function Register() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "",
+    fullName: "",
     email: "",
     password: "",
     companyName: "",
@@ -28,7 +27,15 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.post("/auth/register", form);
+      await api.post("/auth/register", {
+        name: form.fullName, // backend mapping
+        email: form.email,
+        password: form.password,
+        companyName: form.companyName,
+        phone: form.phone,
+        gstNumber: form.gstNumber,
+      });
+
       toast.success("Registration successful!");
       navigate("/login");
     } catch (err) {
@@ -40,7 +47,7 @@ export default function Register() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center relative"
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: `url(${bg})` }}
     >
       <div className="absolute inset-0 bg-black/60"></div>
@@ -48,22 +55,21 @@ export default function Register() {
       <div className="relative w-[320px] p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
 
         <h2 className="text-xl text-cyan-400 text-center mb-4">
-          Register
+          Register Here
         </h2>
 
-        {/* 🔥 IMPORTANT */}
         <form onSubmit={submit} autoComplete="off" className="space-y-3">
 
-          {/* hidden fields (chrome hack) */}
-          <input type="text" name="fakeuser" style={{ display: "none" }} />
-          <input type="password" name="fakepass" style={{ display: "none" }} />
+          {/* Chrome autofill hack */}
+          <input type="text" name="hidden" autoComplete="username" style={{ display: "none" }} />
+          <input type="password" name="hidden-password" autoComplete="new-password" style={{ display: "none" }} />
 
           {/* Name */}
           <input
-            name="name"
+            name="fullName"
             type="text"
             placeholder="Enter username"
-            value={form.name}
+            value={form.fullName}
             onChange={handle}
             autoComplete="off"
             className="input"
@@ -136,7 +142,7 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 bg-red-500 rounded-md text-white"
+            className="w-full py-2 bg-red-500 text-white rounded-md"
           >
             {loading ? "Loading..." : "Register"}
           </button>
@@ -152,4 +158,3 @@ export default function Register() {
     </div>
   );
 }
-<h1 style={{ color: "red" }}>NEW BUILD TEST</h1>
