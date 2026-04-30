@@ -4,9 +4,11 @@ import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../utils/axios";
 import bg from "../assets/registerbg2.jpg";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth(); // ✅ use context
 
   const [form, setForm] = useState({
     email: "",
@@ -28,18 +30,15 @@ export default function Login() {
 
       console.log("LOGIN RESPONSE:", res.data);
 
-      // ✅ IMPORTANT FIX
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      // ✅ CENTRAL LOGIN HANDLER
+      login(res.data.token, res.data.user);
 
       toast.success("Login successful!");
 
-      // ✅ REDIRECT FIX (force reload so context update ho)
-      if (res.data.user.role === "admin") {
-        window.location.href = "/admin";
-      } else {
-        window.location.href = "/vendor";
-      }
+      // ✅ FAST REDIRECT
+      navigate(res.data.user.role === "admin" ? "/admin" : "/vendor", {
+        replace: true,
+      });
 
     } catch (err) {
       console.log(err.response);
@@ -56,16 +55,11 @@ export default function Login() {
     >
       <div className="absolute inset-0 bg-black/60"></div>
 
-      {/* MAIN CIRCLE */}
       <div className="relative flex flex-col items-center justify-center">
 
-        {/* OUTER GLOW */}
         <div className="absolute w-[420px] h-[420px] rounded-full border border-cyan-400 opacity-30"></div>
-
-        {/* DOTTED ANIMATION */}
         <div className="absolute w-[460px] h-[460px] rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
 
-        {/* FORM */}
         <div className="relative text-center">
 
           <h2 className="text-cyan-400 text-2xl mb-6 tracking-widest">
