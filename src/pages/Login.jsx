@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../utils/axios";
+import bg from "../assets/registerbg.jpg"; // ✅ background
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function Login() {
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       const { data } = await api.post("/auth/login", form);
       localStorage.setItem("token", data.token);
@@ -35,54 +37,61 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: `url(${bg})` }}
+    >
+      {/* dark overlay */}
+      <div className="absolute inset-0 bg-black/60"></div>
 
-      <form onSubmit={submit} autoComplete="off" className="space-y-4 w-[300px]">
+      {/* glass card */}
+      <div className="relative w-[320px] p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
 
-        {/* autofill block */}
-        <input type="text" name="hidden" autoComplete="username" style={{ display: "none" }} />
-        <input type="password" name="hidden-password" autoComplete="new-password" style={{ display: "none" }} />
+        <h2 className="text-xl text-cyan-400 text-center mb-4">
+          LOGIN
+        </h2>
 
-        <input
-          name="email"
-          type="email"
-          placeholder="Enter email"
-          value={form.email}
-          onChange={handle}
-          autoComplete="off"
-          className="input"
-        />
+        <form onSubmit={submit} className="space-y-4">
 
-        <div className="relative">
           <input
-            name="password"
-            type={showPwd ? "text" : "password"}
-            placeholder="Enter password"
-            value={form.password}
+            name="email"
+            type="email"
+            placeholder="Enter email"
+            value={form.email}
             onChange={handle}
-            autoComplete="new-password"
-            className="input pr-10"
+            className="input"
           />
-          <button
-            type="button"
-            onClick={() => setShowPwd(!showPwd)}
-            className="absolute right-3 top-2"
-          >
-            {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+
+          <div className="relative">
+            <input
+              name="password"
+              type={showPwd ? "text" : "password"}
+              placeholder="Enter password"
+              value={form.password}
+              onChange={handle}
+              className="input pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPwd(!showPwd)}
+              className="absolute right-3 top-2 text-gray-300"
+            >
+              {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+
+          <button className="w-full bg-cyan-500 py-2 rounded text-white">
+            {loading ? "Loading..." : "Login"}
           </button>
-        </div>
+        </form>
 
-        <button className="w-full bg-cyan-500 py-2 rounded text-white">
-          {loading ? "Loading..." : "Login"}
-        </button>
-
-        <p className="text-center text-sm text-gray-400">
+        <p className="text-center text-sm text-gray-300 mt-3">
           Don’t have account?{" "}
           <Link to="/register" className="text-cyan-400">
             Register
           </Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 }

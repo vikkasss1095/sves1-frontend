@@ -113,3 +113,6 @@ body {
   background: url('/registerbg.jpg') no-repeat center/cover;
   min-height: 100vh;
 }
+.input {
+  @apply w-full px-3 py-2 rounded-md bg-white/80 text-black;
+}
