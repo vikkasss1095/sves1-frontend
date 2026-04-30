@@ -37,55 +37,63 @@ export default function Login() {
     >
       <div className="absolute inset-0 bg-black/60"></div>
 
-      {/* 🔥 CIRCLE EFFECT */}
-      <div className="absolute w-[400px] h-[400px] border-2 border-cyan-400 rounded-full opacity-40 animate-pulse"></div>
+      {/* 🔥 MAIN CIRCLE */}
+      <div className="relative flex flex-col items-center justify-center">
 
-      <div className="relative text-center">
+        {/* OUTER GLOW */}
+        <div className="absolute w-[420px] h-[420px] rounded-full border border-cyan-400 opacity-30"></div>
 
-        <h2 className="text-cyan-400 text-2xl mb-6 tracking-widest">
-          LOGIN
-        </h2>
+        {/* DOTTED ANIMATION */}
+        <div className="absolute w-[460px] h-[460px] rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
 
-        <form onSubmit={submit} className="space-y-4">
+        {/* FORM */}
+        <div className="relative text-center">
 
-          <input
-            name="email"
-            type="email"
-            placeholder="Enter email"
-            value={form.email}
-            onChange={handle}
-            className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
-          />
+          <h2 className="text-cyan-400 text-2xl mb-6 tracking-widest">
+            LOGIN
+          </h2>
 
-          <div className="relative">
+          <form onSubmit={submit} className="space-y-4">
+
             <input
-              name="password"
-              type={showPwd ? "text" : "password"}
-              placeholder="Enter password"
-              value={form.password}
+              name="email"
+              type="email"
+              placeholder="Enter email"
+              value={form.email}
               onChange={handle}
               className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
             />
-            <button
-              type="button"
-              onClick={() => setShowPwd(!showPwd)}
-              className="absolute right-3 top-2"
-            >
-              {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+
+            <div className="relative">
+              <input
+                name="password"
+                type={showPwd ? "text" : "password"}
+                placeholder="Enter password"
+                value={form.password}
+                onChange={handle}
+                className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPwd(!showPwd)}
+                className="absolute right-3 top-2"
+              >
+                {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+
+            <button className="w-[280px] bg-cyan-500 py-2 rounded-full text-white">
+              Login →
             </button>
-          </div>
+          </form>
 
-          <button className="w-[280px] bg-cyan-500 py-2 rounded-full text-white">
-            Login →
-          </button>
-        </form>
-
-        <p className="text-gray-300 mt-4 text-sm">
-          Don’t have an account?{" "}
-          <Link to="/register" className="text-red-400">
-            Register Here..
-          </Link>
-        </p>
+          <p className="text-gray-300 mt-4 text-sm">
+            Don’t have an account?{" "}
+            <Link to="/register" className="text-red-400">
+              Register Here..
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
