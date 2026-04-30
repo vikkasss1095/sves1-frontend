@@ -1,44 +1,45 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 
-// ✅ Auth pages (correct path)
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+// Auth
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 
-// ✅ Vendor pages (correct folder)
-import VendorLayout from "./VendorDashboard/VendorLayout";
-import VendorDashboard from "./VendorDashboard/Dashboard";
-import VendorTasks from "./VendorDashboard/Tasks";
-import VendorProfile from "./VendorDashboard/Profile";
-import VendorDocuments from "./VendorDashboard/Documents";
-import VendorRatings from "./VendorDashboard/Ratings";
-import VendorAnalytics from "./VendorDashboard/Analytics";
-import VendorNotifications from "./VendorDashboard/Notifications";
-import VendorPayments from "./VendorDashboard/Payments";
-import VendorSettings from "./VendorDashboard/Settings";
+// Vendor
+import VendorLayout from "./VendorDashboard/VendorLayout.jsx";
+import VendorDashboard from "./VendorDashboard/Dashboard.jsx";
+import VendorTasks from "./VendorDashboard/Tasks.jsx";
+import VendorProfile from "./VendorDashboard/Profile.jsx";
+import VendorDocuments from "./VendorDashboard/Documents.jsx";
+import VendorRatings from "./VendorDashboard/Ratings.jsx";
+import VendorAnalytics from "./VendorDashboard/Analytics.jsx";
+import VendorNotifications from "./VendorDashboard/Notifications.jsx";
+import VendorPayments from "./VendorDashboard/Payments.jsx";
+import VendorSettings from "./VendorDashboard/Settings.jsx";
 
-// ✅ Admin pages (correct folder)
-import AdminLayout from "./AdminDashboard/AdminLayout";
-import AdminDashboard from "./AdminDashboard/Dashboard";
-import AdminVendors from "./AdminDashboard/Vendors";
-import AdminTasks from "./AdminDashboard/Tasks";
-import AdminEvaluation from "./AdminDashboard/Evaluation";
-import AdminDocuments from "./AdminDashboard/Documents";
-import AdminPayments from "./AdminDashboard/Payments";
-import AdminNotifications from "./AdminDashboard/Notifications";
-import AdminSettings from "./AdminDashboard/Settings";
+// Admin
+import AdminLayout from "./AdminDashboard/AdminLayout.jsx";
+import AdminDashboard from "./AdminDashboard/Dashboard.jsx";
+import AdminVendors from "./AdminDashboard/Vendors.jsx";
+import AdminTasks from "./AdminDashboard/Tasks.jsx";
+import AdminEvaluation from "./AdminDashboard/Evaluation.jsx";
+import AdminDocuments from "./AdminDashboard/Documents.jsx";
+import AdminPayments from "./AdminDashboard/Payments.jsx";
+import AdminNotifications from "./AdminDashboard/Notifications.jsx";
+import AdminSettings from "./AdminDashboard/Settings.jsx";
 
-// 🔐 Protected Route
+// Protected Route
 const ProtectedRoute = ({ children, role }) => {
   const { user, loading } = useAuth();
 
-  if (loading)
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
+  }
 
   if (!user) return <Navigate to="/login" replace />;
 
@@ -49,7 +50,7 @@ const ProtectedRoute = ({ children, role }) => {
   return children;
 };
 
-// 🌍 Public Route
+// Public Route
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
@@ -62,7 +63,6 @@ const PublicRoute = ({ children }) => {
   return children;
 };
 
-// 🚀 APP
 export default function App() {
   return (
     <AuthProvider>
@@ -70,13 +70,15 @@ export default function App() {
         <Toaster position="top-right" />
 
         <Routes>
-          {/* Public */}
           <Route path="/" element={<Navigate to="/login" />} />
+
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
 
-          {/* Vendor */}
-          <Route path="/vendor" element={<ProtectedRoute role="vendor"><VendorLayout /></ProtectedRoute>}>
+          <Route
+            path="/vendor"
+            element={<ProtectedRoute role="vendor"><VendorLayout /></ProtectedRoute>}
+          >
             <Route index element={<VendorDashboard />} />
             <Route path="tasks" element={<VendorTasks />} />
             <Route path="profile" element={<VendorProfile />} />
@@ -88,8 +90,10 @@ export default function App() {
             <Route path="settings" element={<VendorSettings />} />
           </Route>
 
-          {/* Admin */}
-          <Route path="/admin" element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
+          <Route
+            path="/admin"
+            element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}
+          >
             <Route index element={<AdminDashboard />} />
             <Route path="vendors" element={<AdminVendors />} />
             <Route path="tasks" element={<AdminTasks />} />
@@ -100,7 +104,6 @@ export default function App() {
             <Route path="settings" element={<AdminSettings />} />
           </Route>
 
-          {/* Fallback */}
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </BrowserRouter>
