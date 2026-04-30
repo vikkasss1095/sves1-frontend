@@ -108,3 +108,20 @@
 .input-modern {
   @apply w-full px-4 py-2 rounded-xl bg-white/60 backdrop-blur-md border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-indigo-400 transition;
 }
+
+body {
+  background: url('/registerbg.jpg') no-repeat center/cover;
+  min-height: 100vh;
+}
+.input {
+  @apply w-full px-3 py-2 rounded-md bg-white/80 text-black;
+}
+/* global input style */
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.8);
+  color: black;
+  outline: none;
+}
