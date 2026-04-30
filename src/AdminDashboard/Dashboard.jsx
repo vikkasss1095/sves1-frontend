@@ -73,7 +73,7 @@ export default function AdminDashboard() {
           Welcome back, Admin 👋
         </h1>
         <p className="text-sm text-cyan-100/70">
-          System overview and performance
+          System overview and performance by vikas
         </p>
       </div>
 
