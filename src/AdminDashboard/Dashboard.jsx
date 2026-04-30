@@ -1,1 +1,140 @@
-<h1 style={{color:"red"}}>LIVE OK</h1>
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+
+// 🔐 Auth Pages
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+
+// 👤 Vendor Pages
+import VendorLayout from "./VendorDashboard/VendorLayout.jsx";
+import VendorDashboard from "./VendorDashboard/Dashboard.jsx";
+import VendorTasks from "./VendorDashboard/Tasks.jsx";
+import VendorProfile from "./VendorDashboard/Profile.jsx";
+import VendorDocuments from "./VendorDashboard/Documents.jsx";
+import VendorRatings from "./VendorDashboard/Ratings.jsx";
+import VendorAnalytics from "./VendorDashboard/Analytics.jsx";
+import VendorNotifications from "./VendorDashboard/Notifications.jsx";
+import VendorPayments from "./VendorDashboard/Payments.jsx";
+import VendorSettings from "./VendorDashboard/Settings.jsx";
+
+// 🛠️ Admin Pages
+import AdminLayout from "./AdminDashboard/AdminLayout.jsx";
+import AdminDashboard from "./AdminDashboard/Dashboard.jsx";
+import AdminVendors from "./AdminDashboard/Vendors.jsx";
+import AdminTasks from "./AdminDashboard/Tasks.jsx";
+import AdminEvaluation from "./AdminDashboard/Evaluation.jsx";
+import AdminDocuments from "./AdminDashboard/Documents.jsx";
+import AdminPayments from "./AdminDashboard/Payments.jsx";
+import AdminNotifications from "./AdminDashboard/Notifications.jsx";
+import AdminSettings from "./AdminDashboard/Settings.jsx";
+
+// 🔐 Protected Route
+const ProtectedRoute = ({ children, role }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/login" replace />;
+
+  if (role && user.role !== role) {
+    return <Navigate to={user.role === "admin" ? "/admin" : "/vendor"} replace />;
+  }
+
+  return children;
+};
+
+// 🌍 Public Route
+const PublicRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (user) {
+    return <Navigate to={user.role === "admin" ? "/admin" : "/vendor"} replace />;
+  }
+
+  return children;
+};
+
+// 🚀 MAIN APP
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Toaster position="top-right" />
+
+        <Routes>
+
+          {/* 🌐 Public Routes */}
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
+
+          {/* 👤 Vendor Routes */}
+          <Route
+            path="/vendor"
+            element={
+              <ProtectedRoute role="vendor">
+                <VendorLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<VendorDashboard />} />
+            <Route path="tasks" element={<VendorTasks />} />
+            <Route path="profile" element={<VendorProfile />} />
+            <Route path="documents" element={<VendorDocuments />} />
+            <Route path="ratings" element={<VendorRatings />} />
+            <Route path="analytics" element={<VendorAnalytics />} />
+            <Route path="notifications" element={<VendorNotifications />} />
+            <Route path="payments" element={<VendorPayments />} />
+            <Route path="settings" element={<VendorSettings />} />
+          </Route>
+
+          {/* 🛠️ Admin Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="vendors" element={<AdminVendors />} />
+            <Route path="tasks" element={<AdminTasks />} />
+            <Route path="evaluation" element={<AdminEvaluation />} />
+            <Route path="documents" element={<AdminDocuments />} />
+            <Route path="payments" element={<AdminPayments />} />
+            <Route path="notifications" element={<AdminNotifications />} />
+            <Route path="settings" element={<AdminSettings />} />
+          </Route>
+
+          {/* ❌ Fallback */}
+          <Route path="*" element={<Navigate to="/login" />} />
+
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
+}
