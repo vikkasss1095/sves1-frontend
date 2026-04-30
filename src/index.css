@@ -125,3 +125,10 @@ body {
   color: black;
   outline: none;
 }
+
+
+
+/* ✅ FINAL INPUT STYLE */
+.input {
+  @apply w-full px-4 py-2 rounded-lg bg-white/80 text-black placeholder-gray-500 focus:outline-none;
+}
