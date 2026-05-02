@@ -5,25 +5,31 @@ import toast from "react-hot-toast";
 
 export default function ForgetPassword() {
   const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const sendOtp = async (e) => {
     e.preventDefault();
+    console.log("Clicked"); // 🔎 debug
 
     if (!phone || phone.length !== 10) {
       return toast.error("Enter valid mobile number");
     }
 
     try {
+      setLoading(true);
+
       const res = await api.post("/auth/send-otp", { phone });
+      console.log("RES:", res.data); // 🔎 debug
 
-      // 🔥 OTP popup
       toast.success(`OTP: ${res.data.otp}`);
-
       navigate("/verify-otp", { state: { phone } });
 
     } catch (err) {
+      console.log("ERR:", err?.response?.data || err.message);
       toast.error(err.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,7 +45,9 @@ export default function ForgetPassword() {
           maxLength={10}
         />
 
-        <button>Send OTP</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Sending..." : "Send OTP"}
+        </button>
       </form>
     </div>
   );
