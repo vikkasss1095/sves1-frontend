@@ -10,7 +10,7 @@ export default function ForgetPassword() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ INIT RECAPTCHA ONLY ONCE
+  // ✅ FIXED RECAPTCHA INIT
   useEffect(() => {
     if (!window.recaptchaVerifier) {
       window.recaptchaVerifier = new RecaptchaVerifier(
@@ -20,8 +20,6 @@ export default function ForgetPassword() {
           size: "invisible",
         }
       );
-
-      window.recaptchaVerifier.render(); // 🔥 IMPORTANT
     }
   }, []);
 
@@ -35,12 +33,12 @@ export default function ForgetPassword() {
     try {
       setLoading(true);
 
-      // ✅ check user
+      // ✅ backend check
       await api.post("/auth/check-user", { phone });
 
       const appVerifier = window.recaptchaVerifier;
 
-      // ✅ send OTP
+      // 🔥 OTP send
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         "+91" + phone,
