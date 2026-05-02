@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { auth } from "../firebase";
 import api from "../utils/axios";
 import toast from "react-hot-toast";
 
@@ -12,7 +14,6 @@ export default function ForgetPassword() {
   const sendOtp = async (e) => {
     e.preventDefault();
 
-    // 🔒 Basic validation
     if (!phone || phone.length !== 10) {
       return toast.error("Enter valid 10 digit mobile number");
     }
@@ -20,25 +21,35 @@ export default function ForgetPassword() {
     try {
       setLoading(true);
 
-      const res = await api.post("/auth/send-otp", { phone });
+      // ✅ STEP 1: Check user exist
+      await api.post("/auth/check-user", { phone });
 
-      toast.success(res.data.message || "OTP sent successfully");
+      // ✅ STEP 2: Firebase Recaptcha
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha",
+        { size: "invisible" }
+      );
 
-      // 👉 next page with phone
+      // ✅ STEP 3: Send OTP
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        "+91" + phone,
+        window.recaptchaVerifier
+      );
+
+      window.confirmationResult = confirmationResult;
+
+      toast.success("OTP sent successfully");
       navigate("/verify-otp", { state: { phone } });
 
     } catch (err) {
-      console.log("OTP Error:", err);
+      console.log(err);
 
-      // 🎯 MAIN FIX (error handling)
-      if (err.response) {
-        if (err.response.status === 404) {
-          toast.error("Mobile number is not registered");
-        } else {
-          toast.error(err.response.data.message || "Something went wrong");
-        }
+      if (err.response?.status === 404) {
+        toast.error("Mobile number is not registered");
       } else {
-        toast.error("Server not responding");
+        toast.error("Failed to send OTP");
       }
 
     } finally {
@@ -53,9 +64,9 @@ export default function ForgetPassword() {
 
         <input
           type="tel"
-          placeholder="Enter mobile number"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
+          placeholder="Enter mobile number"
           maxLength={10}
         />
 
@@ -63,6 +74,9 @@ export default function ForgetPassword() {
           {loading ? "Sending..." : "Send OTP"}
         </button>
       </form>
+
+      {/* 🔥 Required */}
+      <div id="recaptcha"></div>
     </div>
   );
 }

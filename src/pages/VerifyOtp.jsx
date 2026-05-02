@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import api from "../utils/axios";
 import toast from "react-hot-toast";
 
 export default function VerifyOtp() {
@@ -10,7 +9,6 @@ export default function VerifyOtp() {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  // ❌ अगर phone नहीं आया → redirect
   useEffect(() => {
     if (!state?.phone) {
       toast.error("Invalid access");
@@ -28,10 +26,8 @@ export default function VerifyOtp() {
     try {
       setLoading(true);
 
-      await api.post("/auth/verify-otp", {
-        phone: state.phone,
-        otp,
-      });
+      // ✅ Firebase verify
+      await window.confirmationResult.confirm(otp);
 
       toast.success("OTP verified");
 
@@ -39,10 +35,7 @@ export default function VerifyOtp() {
 
     } catch (err) {
       console.log(err);
-
-      toast.error(
-        err.response?.data?.message || "Invalid or expired OTP"
-      );
+      toast.error("Invalid OTP");
     } finally {
       setLoading(false);
     }
