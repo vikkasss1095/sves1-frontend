@@ -1,62 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import api from "../utils/axios";
 import toast from "react-hot-toast";
 
 export default function VerifyOtp() {
   const [otp, setOtp] = useState("");
-  const [loading, setLoading] = useState(false);
-
   const { state } = useLocation();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!state?.phone) {
-      toast.error("Invalid access");
-      navigate("/forgot-password");
-    }
-  }, [state, navigate]);
 
   const verify = async (e) => {
     e.preventDefault();
 
-    if (!otp || otp.length !== 6) {
-      return toast.error("Enter valid OTP");
-    }
-
     try {
-      setLoading(true);
+      await api.post("/auth/verify-otp", {
+        phone: state.phone,
+        otp,
+      });
 
-      // ✅ Firebase verify
-      await window.confirmationResult.confirm(otp);
-
-      toast.success("OTP verified");
-
+      toast.success("OTP Verified");
       navigate("/reset-password", { state });
 
     } catch (err) {
-      console.log(err);
       toast.error("Invalid OTP");
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <div className="center">
-      <form onSubmit={verify}>
-        <h2>Enter OTP</h2>
+    <form onSubmit={verify}>
+      <h2>Enter OTP</h2>
 
-        <input
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          maxLength={6}
-          placeholder="Enter OTP"
-        />
+      <input
+        value={otp}
+        onChange={(e) => setOtp(e.target.value)}
+      />
 
-        <button disabled={loading}>
-          {loading ? "Verifying..." : "Verify"}
-        </button>
-      </form>
-    </div>
+      <button>Verify</button>
+    </form>
   );
 }

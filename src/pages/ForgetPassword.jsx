@@ -1,27 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import { auth } from "../firebase";
 import api from "../utils/axios";
 import toast from "react-hot-toast";
 
 export default function ForgetPassword() {
   const [phone, setPhone] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  // ✅ FIXED RECAPTCHA INIT
-  useEffect(() => {
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "invisible",
-        }
-      );
-    }
-  }, []);
 
   const sendOtp = async (e) => {
     e.preventDefault();
@@ -31,40 +15,15 @@ export default function ForgetPassword() {
     }
 
     try {
-      setLoading(true);
+      const res = await api.post("/auth/send-otp", { phone });
 
-      // ✅ backend check
-      await api.post("/auth/check-user", { phone });
+      // 🔥 OTP popup
+      toast.success(`OTP: ${res.data.otp}`);
 
-      const appVerifier = window.recaptchaVerifier;
-
-      // 🔥 OTP send
-      const confirmationResult = await signInWithPhoneNumber(
-        auth,
-        "+91" + phone,
-        appVerifier
-      );
-
-      window.confirmationResult = confirmationResult;
-
-      toast.success("OTP sent");
       navigate("/verify-otp", { state: { phone } });
 
     } catch (err) {
-      console.log("OTP Error:", err);
-
-      if (err.response?.status === 404) {
-        toast.error("Mobile number not registered");
-      } else if (err.code === "auth/invalid-phone-number") {
-        toast.error("Invalid number");
-      } else if (err.code === "auth/too-many-requests") {
-        toast.error("Too many attempts");
-      } else {
-        toast.error("OTP failed");
-      }
-
-    } finally {
-      setLoading(false);
+      toast.error(err.response?.data?.message || "Failed to send OTP");
     }
   };
 
@@ -80,13 +39,8 @@ export default function ForgetPassword() {
           maxLength={10}
         />
 
-        <button disabled={loading}>
-          {loading ? "Sending..." : "Send OTP"}
-        </button>
+        <button>Send OTP</button>
       </form>
-
-      {/* 🔥 MUST */}
-      <div id="recaptcha-container"></div>
     </div>
   );
 }
