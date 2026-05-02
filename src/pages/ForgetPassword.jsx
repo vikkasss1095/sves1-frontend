@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../firebase";
@@ -11,9 +11,24 @@ export default function ForgetPassword() {
 
   const navigate = useNavigate();
 
+  // 🔥 INIT RECAPTCHA (only once)
+  useEffect(() => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        {
+          size: "invisible",
+        },
+        auth
+      );
+    }
+  }, []);
+
+  // 🔥 SEND OTP
   const sendOtp = async (e) => {
     e.preventDefault();
 
+    // ✅ validation
     if (!phone || phone.length !== 10) {
       return toast.error("Enter valid 10 digit mobile number");
     }
@@ -21,33 +36,40 @@ export default function ForgetPassword() {
     try {
       setLoading(true);
 
-      // ✅ STEP 1: Check user exist
+      // ✅ STEP 1: Check user exists in DB
       await api.post("/auth/check-user", { phone });
 
-      // ✅ STEP 2: Firebase Recaptcha
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha",
-        { size: "invisible" }
-      );
+      // ✅ STEP 2: Get recaptcha instance
+      const appVerifier = window.recaptchaVerifier;
 
-      // ✅ STEP 3: Send OTP
+      // ✅ STEP 3: Send OTP using Firebase
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         "+91" + phone,
-        window.recaptchaVerifier
+        appVerifier
       );
 
+      // ✅ Save globally
       window.confirmationResult = confirmationResult;
 
       toast.success("OTP sent successfully");
+
+      // 👉 Navigate to verify page
       navigate("/verify-otp", { state: { phone } });
 
     } catch (err) {
-      console.log(err);
+      console.log("OTP Error:", err);
 
+      // 🔥 Backend error
       if (err.response?.status === 404) {
         toast.error("Mobile number is not registered");
+      }
+
+      // 🔥 Firebase error
+      else if (err.code === "auth/invalid-phone-number") {
+        toast.error("Invalid phone number");
+      } else if (err.code === "auth/too-many-requests") {
+        toast.error("Too many attempts, try later");
       } else {
         toast.error("Failed to send OTP");
       }
@@ -64,9 +86,9 @@ export default function ForgetPassword() {
 
         <input
           type="tel"
+          placeholder="Enter mobile number"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          placeholder="Enter mobile number"
           maxLength={10}
         />
 
@@ -75,8 +97,8 @@ export default function ForgetPassword() {
         </button>
       </form>
 
-      {/* 🔥 Required */}
-      <div id="recaptcha"></div>
+      {/* 🔥 REQUIRED for Firebase */}
+      <div id="recaptcha-container"></div>
     </div>
   );
 }
