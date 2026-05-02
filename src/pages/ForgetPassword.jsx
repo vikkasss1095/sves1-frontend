@@ -8,36 +8,36 @@ import toast from "react-hot-toast";
 export default function ForgetPassword() {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
 
   const sendOtp = async (e) => {
     e.preventDefault();
 
     if (!phone || phone.length !== 10) {
-      return toast.error("Enter valid 10 digit mobile number");
+      return toast.error("Enter valid mobile number");
     }
 
     try {
       setLoading(true);
 
-      // ✅ STEP 1: check user
+      // 🔥 Check user exists
       await api.post("/auth/check-user", { phone });
 
-      // ✅ STEP 2: create recaptcha (SAFE WAY)
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(
-          "recaptcha-container",
-          {
-            size: "invisible",
-          },
-          auth
-        );
+      // 🔥 Clear previous recaptcha (IMPORTANT FIX)
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
       }
+
+      // 🔥 Create new recaptcha
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        { size: "invisible" },
+        auth
+      );
 
       const appVerifier = window.recaptchaVerifier;
 
-      // ✅ STEP 3: send OTP
+      // 🔥 Send OTP
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         "+91" + phone,
@@ -46,18 +46,18 @@ export default function ForgetPassword() {
 
       window.confirmationResult = confirmationResult;
 
-      toast.success("OTP sent successfully");
+      toast.success("OTP sent");
       navigate("/verify-otp", { state: { phone } });
 
     } catch (err) {
       console.log("OTP Error:", err);
 
       if (err.response?.status === 404) {
-        toast.error("Mobile number is not registered");
+        toast.error("Mobile number not registered");
       } else if (err.code === "auth/invalid-phone-number") {
-        toast.error("Invalid phone number");
+        toast.error("Invalid number");
       } else {
-        toast.error("Failed to send OTP");
+        toast.error("OTP failed");
       }
 
     } finally {
@@ -72,7 +72,6 @@ export default function ForgetPassword() {
 
         <input
           type="tel"
-          placeholder="Enter mobile number"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           maxLength={10}
@@ -83,7 +82,6 @@ export default function ForgetPassword() {
         </button>
       </form>
 
-      {/* 🔥 MUST EXIST */}
       <div id="recaptcha-container"></div>
     </div>
   );
