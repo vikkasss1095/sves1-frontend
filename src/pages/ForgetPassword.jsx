@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../firebase";
@@ -10,6 +10,21 @@ export default function ForgetPassword() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // ✅ INIT RECAPTCHA ONLY ONCE
+  useEffect(() => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+        }
+      );
+
+      window.recaptchaVerifier.render(); // 🔥 IMPORTANT
+    }
+  }, []);
+
   const sendOtp = async (e) => {
     e.preventDefault();
 
@@ -20,24 +35,12 @@ export default function ForgetPassword() {
     try {
       setLoading(true);
 
-      // 🔥 Check user exists
+      // ✅ check user
       await api.post("/auth/check-user", { phone });
-
-      // 🔥 Clear previous recaptcha (IMPORTANT FIX)
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-      }
-
-      // 🔥 Create new recaptcha
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        "recaptcha-container",
-        { size: "invisible" },
-        auth
-      );
 
       const appVerifier = window.recaptchaVerifier;
 
-      // 🔥 Send OTP
+      // ✅ send OTP
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         "+91" + phone,
@@ -56,6 +59,8 @@ export default function ForgetPassword() {
         toast.error("Mobile number not registered");
       } else if (err.code === "auth/invalid-phone-number") {
         toast.error("Invalid number");
+      } else if (err.code === "auth/too-many-requests") {
+        toast.error("Too many attempts");
       } else {
         toast.error("OTP failed");
       }
@@ -82,6 +87,7 @@ export default function ForgetPassword() {
         </button>
       </form>
 
+      {/* 🔥 MUST */}
       <div id="recaptcha-container"></div>
     </div>
   );
