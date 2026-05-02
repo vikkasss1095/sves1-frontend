@@ -15,13 +15,16 @@ export default function Login() {
     user_password: "",
   });
 
+  const [phone, setPhone] = useState(""); // 🔥 forgot password
+  const [isForgot, setIsForgot] = useState(false);
+
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handle = (e) => {
+  const handle = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
+  // ✅ LOGIN
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -32,8 +35,6 @@ export default function Login() {
         password: form.user_password,
       });
 
-      console.log("LOGIN RESPONSE:", res.data);
-
       login(res.data.token, res.data.user);
 
       toast.success("Login successful!");
@@ -42,8 +43,27 @@ export default function Login() {
         replace: true,
       });
     } catch (err) {
-      console.log(err.response);
       toast.error(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ SEND OTP (Forgot Password)
+  const sendOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await api.post("/auth/send-otp", { phone });
+
+      toast.success("OTP sent to mobile");
+
+      // 👉 next step: OTP screen (future)
+      navigate("/reset-password", { state: { phone } });
+
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }
@@ -58,81 +78,120 @@ export default function Login() {
 
       <div className="relative flex flex-col items-center justify-center">
 
-        {/* Animated Rings */}
         <div className="absolute w-[420px] h-[420px] rounded-full border border-cyan-400 opacity-30"></div>
         <div className="absolute w-[460px] h-[460px] rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
 
         <div className="relative text-center">
 
           <h2 className="text-cyan-400 text-2xl mb-6 tracking-widest">
-            LOGIN
+            {isForgot ? "FORGOT PASSWORD" : "LOGIN"}
           </h2>
 
-          {/* FORM */}
-          <form onSubmit={submit} autoComplete="off" className="space-y-4">
+          {/* 🔥 FORM SWITCH */}
+          {!isForgot ? (
+            <form onSubmit={submit} autoComplete="off" className="space-y-4">
 
-            {/* 🔥 Chrome Autofill Hack */}
-            <input
-              type="text"
-              name="fakeusernameremembered"
-              style={{ display: "none" }}
-            />
-            <input
-              type="password"
-              name="fakepasswordremembered"
-              style={{ display: "none" }}
-            />
+              <input type="text" style={{ display: "none" }} />
+              <input type="password" style={{ display: "none" }} />
 
-            {/* EMAIL */}
-            <input
-              name="user_email"
-              type="email"
-              placeholder="Enter email"
-              value={form.user_email}
-              onChange={handle}
-              autoComplete="off"
-              required
-              className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
-            />
-
-            {/* PASSWORD */}
-            <div className="relative">
               <input
-                name="user_password"
-                type={showPwd ? "text" : "password"}
-                placeholder="Enter password"
-                value={form.user_password}
+                name="user_email"
+                type="email"
+                placeholder="Enter email"
+                value={form.user_email}
                 onChange={handle}
-                autoComplete="new-password"
+                autoComplete="off"
+                required
+                className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
+              />
+
+              <div className="relative">
+                <input
+                  name="user_password"
+                  type={showPwd ? "text" : "password"}
+                  placeholder="Enter password"
+                  value={form.user_password}
+                  onChange={handle}
+                  autoComplete="new-password"
+                  required
+                  className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPwd(!showPwd)}
+                  className="absolute right-3 top-2"
+                >
+                  {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-[280px] bg-cyan-500 py-2 rounded-full text-white"
+              >
+                {loading ? "Loading..." : "Login →"}
+              </button>
+
+            </form>
+          ) : (
+            // 🔥 FORGOT PASSWORD FORM
+            <form onSubmit={sendOtp} className="space-y-4">
+
+              <input
+                type="text"
+                placeholder="Enter mobile number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 required
                 className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
               />
 
               <button
-                type="button"
-                onClick={() => setShowPwd(!showPwd)}
-                className="absolute right-3 top-2"
+                type="submit"
+                disabled={loading}
+                className="w-[280px] bg-cyan-500 py-2 rounded-full text-white"
               >
-                {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                {loading ? "Sending..." : "Send OTP"}
               </button>
-            </div>
 
-            {/* BUTTON */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-[280px] bg-cyan-500 py-2 rounded-full text-white"
-            >
-              {loading ? "Loading..." : "Login →"}
-            </button>
-          </form>
+            </form>
+          )}
 
+          {/* 🔥 LINKS */}
           <p className="text-gray-300 mt-4 text-sm">
-            Don’t have an account?{" "}
-            <Link to="/register" className="text-red-400">
-              Register Here..
-            </Link>
+            {!isForgot ? (
+              <>
+                Forgot Password?{" "}
+                <span
+                  onClick={() => setIsForgot(true)}
+                  className="text-cyan-400 cursor-pointer"
+                >
+                  Reset here
+                </span>
+              </>
+            ) : (
+              <>
+                Back to{" "}
+                <span
+                  onClick={() => setIsForgot(false)}
+                  className="text-red-400 cursor-pointer"
+                >
+                  Login
+                </span>
+              </>
+            )}
           </p>
+
+          {!isForgot && (
+            <p className="text-gray-300 mt-2 text-sm">
+              Don’t have an account?{" "}
+              <Link to="/register" className="text-red-400">
+                Register Here..
+              </Link>
+            </p>
+          )}
 
         </div>
       </div>
