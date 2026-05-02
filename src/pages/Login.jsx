@@ -8,38 +8,39 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth(); // ✅ use context
+  const { login } = useAuth();
 
   const [form, setForm] = useState({
-    email: "",
-    password: "",
+    user_email: "",
+    user_password: "",
   });
 
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handle = (e) =>
+  const handle = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/login", form);
+      const res = await api.post("/auth/login", {
+        email: form.user_email,
+        password: form.user_password,
+      });
 
       console.log("LOGIN RESPONSE:", res.data);
 
-      // ✅ CENTRAL LOGIN HANDLER
       login(res.data.token, res.data.user);
 
       toast.success("Login successful!");
 
-      // ✅ FAST REDIRECT
       navigate(res.data.user.role === "admin" ? "/admin" : "/vendor", {
         replace: true,
       });
-
     } catch (err) {
       console.log(err.response);
       toast.error(err.response?.data?.message || "Login failed");
@@ -57,6 +58,7 @@ export default function Login() {
 
       <div className="relative flex flex-col items-center justify-center">
 
+        {/* Animated Rings */}
         <div className="absolute w-[420px] h-[420px] rounded-full border border-cyan-400 opacity-30"></div>
         <div className="absolute w-[460px] h-[460px] rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
 
@@ -66,28 +68,46 @@ export default function Login() {
             LOGIN
           </h2>
 
-          <form onSubmit={submit} className="space-y-4">
+          {/* FORM */}
+          <form onSubmit={submit} autoComplete="off" className="space-y-4">
 
+            {/* 🔥 Chrome Autofill Hack */}
             <input
-              name="email"
+              type="text"
+              name="fakeusernameremembered"
+              style={{ display: "none" }}
+            />
+            <input
+              type="password"
+              name="fakepasswordremembered"
+              style={{ display: "none" }}
+            />
+
+            {/* EMAIL */}
+            <input
+              name="user_email"
               type="email"
               placeholder="Enter email"
-              value={form.email}
+              value={form.user_email}
               onChange={handle}
+              autoComplete="off"
               required
               className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
             />
 
+            {/* PASSWORD */}
             <div className="relative">
               <input
-                name="password"
+                name="user_password"
                 type={showPwd ? "text" : "password"}
                 placeholder="Enter password"
-                value={form.password}
+                value={form.user_password}
                 onChange={handle}
+                autoComplete="new-password"
                 required
                 className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
               />
+
               <button
                 type="button"
                 onClick={() => setShowPwd(!showPwd)}
@@ -97,6 +117,7 @@ export default function Login() {
               </button>
             </div>
 
+            {/* BUTTON */}
             <button
               type="submit"
               disabled={loading}
@@ -104,7 +125,6 @@ export default function Login() {
             >
               {loading ? "Loading..." : "Login →"}
             </button>
-
           </form>
 
           <p className="text-gray-300 mt-4 text-sm">
