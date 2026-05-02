@@ -9,12 +9,12 @@ export default function Register() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    fullName: "",
-    email: "",
-    companyName: "",
-    phone: "",
-    gstNumber: "",
-    password: "",
+    user_name: "",
+    user_email: "",
+    company_name: "",
+    phone_number: "",
+    gst_number: "",
+    user_password: "",
   });
 
   const [showPwd, setShowPwd] = useState(false);
@@ -25,20 +25,26 @@ export default function Register() {
 
   const submit = async (e) => {
     e.preventDefault();
+
+    if (loading) return; // 🔥 prevent double click
+
     setLoading(true);
 
     try {
-      await api.post("/auth/register", {
-        name: form.fullName,
-        email: form.email,
-        password: form.password,
-        companyName: form.companyName,
-        phone: form.phone,
-        gstNumber: form.gstNumber,
+      const res = await api.post("/auth/register", {
+        name: form.user_name,
+        email: form.user_email,
+        password: form.user_password,
+        companyName: form.company_name,
+        phone: form.phone_number,
+        gstNumber: form.gst_number,
       });
 
       toast.success("Registration successful!");
-      navigate("/login");
+
+      // 🔥 fast redirect (no delay)
+      navigate("/login", { replace: true });
+
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
     } finally {
@@ -59,78 +65,96 @@ export default function Register() {
           Register Here
         </h2>
 
-        <form onSubmit={submit} className="space-y-3">
+        {/* 🔥 FORM */}
+        <form onSubmit={submit} autoComplete="off" className="space-y-3">
 
+          {/* 🔥 Chrome Autofill Hack */}
+          <input type="text" name="fakeuser" style={{ display: "none" }} />
+          <input type="password" name="fakepass" style={{ display: "none" }} />
+
+          {/* USERNAME */}
           <div>
             <label className="text-sm text-gray-300">Username</label>
             <input
-              name="fullName"
+              name="user_name"
               type="text"
               placeholder="Enter username"
-              value={form.fullName}
+              value={form.user_name}
               onChange={handle}
+              autoComplete="off"
               className="input"
             />
           </div>
 
+          {/* EMAIL */}
           <div>
             <label className="text-sm text-gray-300">Email Id</label>
             <input
-              name="email"
+              name="user_email"
               type="email"
               placeholder="Enter email"
-              value={form.email}
+              value={form.user_email}
               onChange={handle}
+              autoComplete="off"
               className="input"
             />
           </div>
 
+          {/* COMPANY */}
           <div>
             <label className="text-sm text-gray-300">Company Name</label>
             <input
-              name="companyName"
+              name="company_name"
               type="text"
               placeholder="Enter company name"
-              value={form.companyName}
+              value={form.company_name}
               onChange={handle}
+              autoComplete="off"
               className="input"
             />
           </div>
 
+          {/* PHONE */}
           <div>
             <label className="text-sm text-gray-300">Phone</label>
             <input
-              name="phone"
+              name="phone_number"
               type="text"
               placeholder="Enter phone"
-              value={form.phone}
+              value={form.phone_number}
               onChange={handle}
+              autoComplete="off"
               className="input"
             />
           </div>
 
+          {/* GST */}
           <div>
             <label className="text-sm text-gray-300">GST Number</label>
             <input
-              name="gstNumber"
+              name="gst_number"
               type="text"
               placeholder="Enter GST"
-              value={form.gstNumber}
+              value={form.gst_number}
               onChange={handle}
+              autoComplete="off"
               className="input"
             />
           </div>
 
+          {/* PASSWORD */}
           <div className="relative">
             <label className="text-sm text-gray-300">Password</label>
             <input
-              name="password"
+              name="user_password"
               type={showPwd ? "text" : "password"}
               placeholder="Enter password"
-              value={form.password}
+              value={form.user_password}
               onChange={handle}
+              autoComplete="new-password"
               className="input pr-10"
             />
+
             <button
               type="button"
               onClick={() => setShowPwd(!showPwd)}
@@ -140,9 +164,14 @@ export default function Register() {
             </button>
           </div>
 
-          <button className="w-full py-2 bg-red-500 text-white rounded-md">
-            {loading ? "Loading..." : "Register"}
+          {/* BUTTON */}
+          <button
+            disabled={loading}
+            className="w-full py-2 bg-red-500 text-white rounded-md"
+          >
+            {loading ? "Registering..." : "Register"}
           </button>
+
         </form>
 
         <p className="text-center text-xs text-gray-300 mt-3">
