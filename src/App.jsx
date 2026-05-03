@@ -16,7 +16,7 @@ import VendorDashboard from "./VendorDashboard/Dashboard.jsx";
 // Admin
 import AdminLayout from "./AdminDashboard/AdminLayout.jsx";
 import AdminDashboard from "./AdminDashboard/Dashboard.jsx";
-import Users from "./AdminDashboard/Users.jsx";
+
 import Vendors from "./AdminDashboard/Vendors.jsx";
 import Tasks from "./AdminDashboard/Tasks.jsx";
 import Payments from "./AdminDashboard/Payments.jsx";
