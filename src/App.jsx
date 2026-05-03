@@ -19,7 +19,7 @@ import AdminDashboard from "./AdminDashboard/Dashboard.jsx";
 
 import Vendors from "./AdminDashboard/Vendors.jsx";
 import Tasks from "./AdminDashboard/Tasks.jsx";
-import Users from "./AdminDashboard/Users.jsx"; 
+ 
 import Payments from "./AdminDashboard/Payments.jsx";
 import Settings from "./AdminDashboard/Settings.jsx";
 import Notifications from "./AdminDashboard/Notifications.jsx";
@@ -76,7 +76,7 @@ export default function App() {
             element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}
           >
             <Route index element={<AdminDashboard />} />
-            <Route path="users" element={<Users />} />
+      
             <Route path="vendors" element={<Vendors />} />
             <Route path="tasks" element={<Tasks />} />
             <Route path="payments" element={<Payments />} />
