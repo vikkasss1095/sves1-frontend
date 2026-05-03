@@ -32,9 +32,9 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-gray-50">
 
-      {/* ✅ DESKTOP SIDEBAR (NOT FIXED) */}
+      {/* ✅ DESKTOP SIDEBAR (NORMAL - NOT FIXED) */}
       <aside className="hidden lg:flex w-64 bg-white border-r flex-col">
 
         {/* LOGO */}
@@ -89,7 +89,7 @@ export default function AdminLayout() {
         </button>
       </aside>
 
-      {/* 🔥 MOBILE SIDEBAR */}
+      {/* ✅ MOBILE SIDEBAR */}
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
@@ -98,6 +98,8 @@ export default function AdminLayout() {
           />
 
           <aside className="absolute left-0 top-0 h-full w-72 bg-white border-r flex flex-col">
+            
+            {/* HEADER */}
             <div className="flex items-center gap-3 px-5 py-5 border-b">
               <img src={logo} className="w-8 h-8" />
               <div>
@@ -110,6 +112,7 @@ export default function AdminLayout() {
               </button>
             </div>
 
+            {/* NAV */}
             <nav className="flex-1 px-3 space-y-1">
               {navItems.map(({ to, label, icon: Icon, end }) => (
                 <NavLink
@@ -130,11 +133,12 @@ export default function AdminLayout() {
                 </NavLink>
               ))}
             </nav>
+
           </aside>
         </div>
       )}
 
-      {/* 🔥 MAIN CONTENT */}
+      {/* ✅ MAIN */}
       <div className="flex-1 flex flex-col">
 
         {/* TOPBAR */}
@@ -149,7 +153,7 @@ export default function AdminLayout() {
         </header>
 
         {/* CONTENT */}
-        <main className="flex-1 p-4 bg-gray-50">
+        <main className="flex-1 p-4">
           <Outlet />
         </main>
 
