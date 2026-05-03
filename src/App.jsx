@@ -16,13 +16,20 @@ import VendorDashboard from "./VendorDashboard/Dashboard.jsx";
 // Admin
 import AdminLayout from "./AdminDashboard/AdminLayout.jsx";
 import AdminDashboard from "./AdminDashboard/Dashboard.jsx";
+import Users from "./AdminDashboard/Users.jsx";
+import Vendors from "./AdminDashboard/Vendors.jsx";
+import Tasks from "./AdminDashboard/Tasks.jsx";
+import Payments from "./AdminDashboard/Payments.jsx";
+import Settings from "./AdminDashboard/Settings.jsx";
+import Notifications from "./AdminDashboard/Notifications.jsx";
+import Documents from "./AdminDashboard/Documents.jsx";
+import Evaluation from "./AdminDashboard/Evaluation.jsx";
 
 // 🔒 Protected
 const ProtectedRoute = ({ children, role }) => {
   const { user, loading } = useAuth();
 
   if (loading) return null;
-
   if (!user) return <Navigate to="/login" />;
 
   if (role && user.role !== role) {
@@ -62,12 +69,20 @@ export default function App() {
             <Route index element={<VendorDashboard />} />
           </Route>
 
-          {/* Admin */}
+          {/* 🔥 ADMIN FULL ROUTES */}
           <Route
             path="/admin"
             element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}
           >
             <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<Users />} />
+            <Route path="vendors" element={<Vendors />} />
+            <Route path="tasks" element={<Tasks />} />
+            <Route path="payments" element={<Payments />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="notifications" element={<Notifications />} />
+            <Route path="documents" element={<Documents />} />
+            <Route path="evaluation" element={<Evaluation />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" />} />
