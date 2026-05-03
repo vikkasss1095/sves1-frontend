@@ -19,6 +19,7 @@ import AdminDashboard from "./AdminDashboard/Dashboard.jsx";
 
 import Vendors from "./AdminDashboard/Vendors.jsx";
 import Tasks from "./AdminDashboard/Tasks.jsx";
+import Users from "./AdminDashboard/Users.jsx"; 
 import Payments from "./AdminDashboard/Payments.jsx";
 import Settings from "./AdminDashboard/Settings.jsx";
 import Notifications from "./AdminDashboard/Notifications.jsx";
