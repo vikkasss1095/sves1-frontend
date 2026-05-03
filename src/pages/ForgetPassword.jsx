@@ -24,15 +24,25 @@ export default function ForgetPassword() {
       if (loading) return;
       setLoading(true);
 
-      await api.post("/auth/forgot-password/send-otp", {
+      console.log("📤 Sending OTP to:", cleanEmail); // 🔥 DEBUG
+
+      const res = await api.post("/auth/forgot-password/send-otp", {
         email: cleanEmail,
       });
 
-      toast.success("OTP sent to your email");
+      console.log("✅ API Response:", res.data); // 🔥 DEBUG
+
+      // 🔥 TEMP DEBUG (अगर backend OTP भेज रहा है)
+      if (res.data?.otp) {
+        toast.success(`OTP: ${res.data.otp}`);
+      } else {
+        toast.success("OTP sent to your email");
+      }
 
       navigate("/verify-otp", { state: { email: cleanEmail } });
 
     } catch (err) {
+      console.log("❌ ERROR:", err.response?.data || err.message); // 🔥 DEBUG
       toast.error(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
