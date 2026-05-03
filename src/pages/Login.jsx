@@ -23,9 +23,11 @@ export default function Login() {
 
   const submit = async (e) => {
     e.preventDefault();
+
     if (loading) return;
 
     setLoading(true);
+
     try {
       const res = await api.post("/auth/login", {
         email: form.user_email,
@@ -33,11 +35,13 @@ export default function Login() {
       });
 
       login(res.data.token, res.data.user);
+
       toast.success("Login successful!");
 
       navigate(res.data.user.role === "admin" ? "/admin" : "/vendor", {
         replace: true,
       });
+
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     } finally {
@@ -47,56 +51,52 @@ export default function Login() {
 
   return (
     <div
-      className="h-[100dvh] flex items-center justify-center bg-cover bg-center overflow-hidden"
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: `url(${bg})` }}
     >
-      {/* overlay */}
       <div className="absolute inset-0 bg-black/60"></div>
 
-      {/* circle wrapper */}
-      <div className="relative flex items-center justify-center w-full max-w-[320px]">
+      <div className="relative flex flex-col items-center justify-center">
 
-        {/* outer ring */}
-        <div className="absolute w-[300px] h-[300px] rounded-full border-2 border-dashed border-cyan-400 opacity-40"></div>
+        {/* Rings */}
+        <div className="absolute w-[420px] h-[420px] rounded-full border border-cyan-400 opacity-30"></div>
+        <div className="absolute w-[460px] h-[460px] rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
 
-        {/* inner ring */}
-        <div className="absolute w-[260px] h-[260px] rounded-full border border-cyan-400 opacity-30"></div>
+        <div className="relative text-center">
 
-        {/* content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center w-full px-4">
-
-          <h2 className="text-cyan-400 text-xl mb-4 tracking-widest">
+          <h2 className="text-cyan-400 text-2xl mb-6 tracking-widest">
             LOGIN
           </h2>
 
-          <form
-            onSubmit={submit}
-            className="space-y-3 w-full flex flex-col items-center"
-          >
-            <input type="text" name="fakeuser" className="hidden" />
-            <input type="password" name="fakepass" className="hidden" />
+          <form onSubmit={submit} autoComplete="off" className="space-y-4">
 
-            {/* email */}
+            {/* Chrome autofill hack */}
+            <input type="text" name="fakeuser" style={{ display: "none" }} />
+            <input type="password" name="fakepass" style={{ display: "none" }} />
+
+            {/* Email */}
             <input
               name="user_email"
               type="email"
               placeholder="Enter email"
               value={form.user_email}
               onChange={handle}
+              autoComplete="off"
               required
-              className="w-full max-w-[240px] px-4 py-2 rounded-full bg-white text-black"
+              className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
             />
 
-            {/* password */}
-            <div className="relative w-full max-w-[240px]">
+            {/* Password */}
+            <div className="relative">
               <input
                 name="user_password"
                 type={showPwd ? "text" : "password"}
                 placeholder="Enter password"
                 value={form.user_password}
                 onChange={handle}
+                autoComplete="new-password"
                 required
-                className="w-full px-4 py-2 rounded-full bg-white text-black"
+                className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
               />
 
               <button
@@ -108,25 +108,27 @@ export default function Login() {
               </button>
             </div>
 
-            {/* button */}
+            {/* Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full max-w-[240px] bg-cyan-500 py-2 rounded-full text-white"
+              className="w-[280px] bg-cyan-500 py-2 rounded-full text-white"
             >
-              {loading ? "Logging..." : "Login →"}
+              {loading ? "Logging in..." : "Login →"}
             </button>
+
           </form>
 
-          {/* links */}
-          <p className="text-gray-300 mt-3 text-xs text-center leading-tight">
+          {/* 🔥 Forgot Password Link */}
+          <p className="text-gray-300 mt-4 text-sm">
             Forgot Password?{" "}
             <Link to="/forgot-password" className="text-cyan-400">
               Reset here
             </Link>
           </p>
 
-          <p className="text-gray-300 mt-1 text-xs text-center leading-tight">
+          {/* Register */}
+          <p className="text-gray-300 mt-2 text-sm">
             Don’t have an account?{" "}
             <Link to="/register" className="text-red-400">
               Register Here..
@@ -138,3 +140,8 @@ export default function Login() {
     </div>
   );
 }
+
+
+
+
+
