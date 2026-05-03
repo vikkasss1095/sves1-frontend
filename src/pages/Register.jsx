@@ -20,14 +20,54 @@ export default function Register() {
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handle = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handle = (e) => {
+    const { name, value } = e.target;
+
+    // 🔥 PHONE LIMIT (10 digit)
+    if (name === "phone_number") {
+      if (!/^\d{0,10}$/.test(value)) return;
+    }
+
+    // 🔥 PASSWORD LIMIT (max 6)
+    if (name === "user_password") {
+      if (value.length > 6) return;
+    }
+
+    setForm({ ...form, [name]: value });
+  };
+
+  const validate = () => {
+    // EMAIL VALIDATION
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(form.user_email)) {
+      toast.error("Enter valid email");
+      return false;
+    }
+
+    // PHONE VALIDATION
+    if (form.phone_number.length !== 10) {
+      toast.error("Phone must be 10 digits");
+      return false;
+    }
+
+    // PASSWORD VALIDATION
+    if (form.user_password.length !== 6) {
+      toast.error("Password must be exactly 6 characters");
+      return false;
+    }
+
+    return true;
+  };
 
   const submit = async (e) => {
     e.preventDefault();
     if (loading) return;
 
+    if (!validate()) return;
+
     setLoading(true);
+
     try {
       await api.post("/auth/register", {
         name: form.user_name,
@@ -49,135 +89,103 @@ export default function Register() {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden px-4">
+    <div className="relative min-h-screen flex items-center justify-center px-4">
 
       {/* BG */}
-      <img
-        src={bg}
-        alt="bg"
-        className="absolute inset-0 w-full h-full object-cover"
-      />
-
+      <img src={bg} className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-0 bg-black/60"></div>
 
-      {/* 🔥 CARD FIX */}
-      <div className="relative z-10 w-full max-w-[380px] sm:max-w-[420px] 
-                      p-5 sm:p-6 
-                      bg-white/10 backdrop-blur-xl 
-                      border border-white/20 
-                      rounded-2xl">
+      <div className="relative z-10 w-full max-w-[420px] p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
 
-        <h2 className="text-lg sm:text-xl text-cyan-400 text-center mb-4">
+        <h2 className="text-xl text-cyan-400 text-center mb-4">
           Register Here
         </h2>
 
         <form onSubmit={submit} autoComplete="off" className="space-y-3">
 
-          {/* Autofill block */}
-          <input type="text" className="hidden" />
-          <input type="password" className="hidden" />
+          {/* 🔥 AUTOFILL BLOCK */}
+          <input type="text" name="fake_user" autoComplete="username" className="hidden" />
+          <input type="password" name="fake_pass" autoComplete="new-password" className="hidden" />
 
-          {/* INPUT COMMON CLASS */}
           {/* Username */}
-          <div>
-            <label className="text-xs sm:text-sm text-gray-300">
-              Username
-            </label>
-            <input
-              name="user_name"
-              value={form.user_name}
-              onChange={handle}
-              placeholder="Enter username"
-              className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
-            />
-          </div>
+          <input
+            name="user_name"
+            value={form.user_name}
+            onChange={handle}
+            autoComplete="off"
+            placeholder="Enter username"
+            className="w-full px-3 py-2 rounded bg-white text-black text-sm"
+            required
+          />
 
           {/* Email */}
-          <div>
-            <label className="text-xs sm:text-sm text-gray-300">
-              Email Id
-            </label>
-            <input
-              name="user_email"
-              value={form.user_email}
-              onChange={handle}
-              autoComplete="off"
-              placeholder="Enter email"
-              className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
-            />
-          </div>
+          <input
+            name="user_email"
+            type="email"
+            value={form.user_email}
+            onChange={handle}
+            autoComplete="off"
+            placeholder="Enter email"
+            className="w-full px-3 py-2 rounded bg-white text-black text-sm"
+            required
+          />
 
           {/* Company */}
-          <div>
-            <label className="text-xs sm:text-sm text-gray-300">
-              Company Name
-            </label>
-            <input
-              name="company_name"
-              value={form.company_name}
-              onChange={handle}
-              placeholder="Enter company name"
-              className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
-            />
-          </div>
+          <input
+            name="company_name"
+            value={form.company_name}
+            onChange={handle}
+            autoComplete="off"
+            placeholder="Company name"
+            className="w-full px-3 py-2 rounded bg-white text-black text-sm"
+          />
 
           {/* Phone */}
-          <div>
-            <label className="text-xs sm:text-sm text-gray-300">
-              Phone
-            </label>
-            <input
-              name="phone_number"
-              value={form.phone_number}
-              onChange={handle}
-              placeholder="Enter phone"
-              className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
-            />
-          </div>
+          <input
+            name="phone_number"
+            value={form.phone_number}
+            onChange={handle}
+            autoComplete="off"
+            placeholder="Phone (10 digit)"
+            className="w-full px-3 py-2 rounded bg-white text-black text-sm"
+            required
+          />
 
           {/* GST */}
-          <div>
-            <label className="text-xs sm:text-sm text-gray-300">
-              GST Number
-            </label>
-            <input
-              name="gst_number"
-              value={form.gst_number}
-              onChange={handle}
-              placeholder="Enter GST"
-              className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
-            />
-          </div>
+          <input
+            name="gst_number"
+            value={form.gst_number}
+            onChange={handle}
+            autoComplete="off"
+            placeholder="GST"
+            className="w-full px-3 py-2 rounded bg-white text-black text-sm"
+          />
 
           {/* Password */}
           <div className="relative">
-            <label className="text-xs sm:text-sm text-gray-300">
-              Password
-            </label>
-
             <input
               name="user_password"
               type={showPwd ? "text" : "password"}
               value={form.user_password}
-              autoComplete="off"
               onChange={handle}
-              placeholder="Enter password"
-              className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm pr-10"
+              autoComplete="new-password"
+              placeholder="Password (6 char)"
+              className="w-full px-3 py-2 rounded bg-white text-black text-sm pr-10"
+              required
             />
 
             <button
               type="button"
               onClick={() => setShowPwd(!showPwd)}
-              className="absolute right-3 top-8 text-gray-500"
+              className="absolute right-3 top-2 text-gray-500"
             >
               {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
 
-          {/* Button */}
           <button
             disabled={loading}
-            className="w-full py-2 bg-red-500 text-white rounded-md text-sm sm:text-base active:scale-95 transition"
+            className="w-full py-2 bg-red-500 text-white rounded active:scale-95"
           >
             {loading ? "Registering..." : "Register"}
           </button>
@@ -189,6 +197,7 @@ export default function Register() {
             Login Here..
           </Link>
         </p>
+
       </div>
     </div>
   );
