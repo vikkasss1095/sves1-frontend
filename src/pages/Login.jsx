@@ -47,24 +47,30 @@ export default function Login() {
 
   return (
     <div
-      className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat flex items-center justify-center"
-      style={{ backgroundImage: `url(${bg})` }}
+      className="relative min-h-screen w-full flex items-center justify-center overflow-hidden"
     >
+      {/* ✅ BG IMAGE FIX */}
+      <img
+        src={bg}
+        alt="bg"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/60"></div>
 
-      {/* Center Wrapper */}
-      <div className="relative flex items-center justify-center w-full h-full px-4">
+      {/* Center Content */}
+      <div className="relative flex items-center justify-center w-full px-4">
 
         {/* Rings */}
         <div className="absolute w-[85vw] max-w-[380px] aspect-square rounded-full border border-cyan-400 opacity-30"></div>
 
         <div className="absolute w-[92vw] max-w-[430px] aspect-square rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
 
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center w-full max-w-[300px]">
+        {/* Form */}
+        <div className="relative z-10 w-full max-w-[300px] flex flex-col items-center text-center">
 
-          <h2 className="text-cyan-400 text-xl sm:text-2xl mb-5 tracking-widest">
+          <h2 className="text-cyan-400 text-xl sm:text-2xl mb-4 tracking-widest">
             LOGIN
           </h2>
 
@@ -73,23 +79,19 @@ export default function Login() {
             autoComplete="off"
             className="space-y-3 w-full flex flex-col items-center"
           >
-            {/* Autofill hack */}
             <input type="text" name="fakeuser" className="hidden" />
             <input type="password" name="fakepass" className="hidden" />
 
-            {/* Email */}
             <input
               name="user_email"
               type="email"
               placeholder="Enter email"
               value={form.user_email}
               onChange={handle}
-              autoComplete="off"
-              required
               className="w-full px-4 py-2 rounded-full bg-white text-black text-sm"
+              required
             />
 
-            {/* Password */}
             <div className="relative w-full">
               <input
                 name="user_password"
@@ -97,9 +99,8 @@ export default function Login() {
                 placeholder="Enter password"
                 value={form.user_password}
                 onChange={handle}
-                autoComplete="new-password"
-                required
                 className="w-full px-4 py-2 rounded-full bg-white text-black text-sm"
+                required
               />
 
               <button
@@ -111,7 +112,6 @@ export default function Login() {
               </button>
             </div>
 
-            {/* Button */}
             <button
               type="submit"
               disabled={loading}
@@ -122,7 +122,7 @@ export default function Login() {
           </form>
 
           {/* Links */}
-          <div className="mt-3 text-center text-xs leading-tight">
+          <div className="mt-3 text-xs leading-tight">
             <p className="text-gray-300">
               Forgot Password?{" "}
               <Link to="/forgot-password" className="text-cyan-400">
