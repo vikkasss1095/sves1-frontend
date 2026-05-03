@@ -9,19 +9,18 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const loadUser = async () => {
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          setLoading(false);
-          return;
-        }
-
         const res = await api.get("/auth/me");
         setUser(res.data.user);
-
       } catch (err) {
-        console.log("Auth failed");
+        console.error("Auth verification failed");
         localStorage.removeItem("token");
         setUser(null);
       } finally {

@@ -2,67 +2,81 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 
-// Auth
+// Auth Components
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import ForgotPassword from "./pages/ForgetPassword.jsx";
 import VerifyOtp from "./pages/VerifyOtp.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 
-// Vendor
+// Vendor Components
 import VendorLayout from "./VendorDashboard/VendorLayout.jsx";
 import VendorDashboard from "./VendorDashboard/Dashboard.jsx";
 
-// Admin
+// Admin Components
 import AdminLayout from "./AdminDashboard/AdminLayout.jsx";
 import AdminDashboard from "./AdminDashboard/Dashboard.jsx";
-
 import Vendors from "./AdminDashboard/Vendors.jsx";
 import Tasks from "./AdminDashboard/Tasks.jsx";
- 
 import Payments from "./AdminDashboard/Payments.jsx";
 import Settings from "./AdminDashboard/Settings.jsx";
 import Notifications from "./AdminDashboard/Notifications.jsx";
 import Documents from "./AdminDashboard/Documents.jsx";
 import Evaluation from "./AdminDashboard/Evaluation.jsx";
 
-// 🔒 Protected
+// 🔒 Protected Route Logic
 const ProtectedRoute = ({ children, role }) => {
   const { user, loading } = useAuth();
 
-  if (loading) return null;
-  if (!user) return <Navigate to="/login" />;
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#0a0a0a]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/login" replace />;
 
   if (role && user.role !== role) {
-    return <Navigate to="/login" />;
+    return <Navigate to={user.role === 'admin' ? '/admin' : '/vendor'} replace />;
   }
 
   return children;
 };
 
-// 🌐 Public
+// 🌐 Public Route Logic (Fixed for Admin/Vendor refresh)
 const PublicRoute = ({ children }) => {
-  const { user } = useAuth();
-  return user ? <Navigate to="/vendor" /> : children;
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (user) {
+    // Role ke hisaab se sahi dashboard par bhejta hai
+    return <Navigate to={user.role === "admin" ? "/admin" : "/vendor"} replace />;
+  }
+
+  return children;
 };
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Toaster position="top-right" />
+        <Toaster position="top-right" reverseOrder={false} />
 
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
+          {/* Default Redirect */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
 
-          {/* Auth */}
+          {/* Auth Routes */}
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Vendor */}
+          {/* Vendor Dashboard Routes */}
           <Route
             path="/vendor"
             element={<ProtectedRoute role="vendor"><VendorLayout /></ProtectedRoute>}
@@ -70,13 +84,12 @@ export default function App() {
             <Route index element={<VendorDashboard />} />
           </Route>
 
-          {/* 🔥 ADMIN FULL ROUTES */}
+          {/* Admin Dashboard Routes */}
           <Route
             path="/admin"
             element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}
           >
             <Route index element={<AdminDashboard />} />
-      
             <Route path="vendors" element={<Vendors />} />
             <Route path="tasks" element={<Tasks />} />
             <Route path="payments" element={<Payments />} />
@@ -86,7 +99,8 @@ export default function App() {
             <Route path="evaluation" element={<Evaluation />} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/login" />} />
+          {/* 404 Redirect */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
