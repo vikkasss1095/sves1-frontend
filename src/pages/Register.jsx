@@ -101,6 +101,7 @@ export default function Register() {
               name="user_email"
               value={form.user_email}
               onChange={handle}
+              autoComplete="off"
               placeholder="Enter email"
               className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
             />
@@ -158,6 +159,7 @@ export default function Register() {
               name="user_password"
               type={showPwd ? "text" : "password"}
               value={form.user_password}
+              autoComplete="off"
               onChange={handle}
               placeholder="Enter password"
               className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm pr-10"
