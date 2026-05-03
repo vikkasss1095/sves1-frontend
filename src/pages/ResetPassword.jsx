@@ -10,35 +10,29 @@ export default function ResetPassword() {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  // 🔥 सुरक्षा check
   useEffect(() => {
-    if (!state?.phone) {
-      toast.error("Invalid access");
+    if (!state?.email) {
       navigate("/forgot-password");
     }
-  }, [state, navigate]);
+  }, []);
 
   const reset = async (e) => {
     e.preventDefault();
-
-    if (!password || password.length < 6) {
-      return toast.error("Password must be at least 6 characters");
-    }
 
     try {
       setLoading(true);
 
       await api.post("/auth/reset-password", {
-        phone: state.phone,
+        email: state.email,
         newPassword: password,
       });
 
-      toast.success("Password Updated Successfully");
+      toast.success("Password updated");
 
       navigate("/login");
 
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Error resetting password");
+    } catch {
+      toast.error("Error resetting password");
     } finally {
       setLoading(false);
     }
@@ -56,8 +50,8 @@ export default function ResetPassword() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button disabled={loading}>
-          {loading ? "Updating..." : "Update Password"}
+        <button>
+          {loading ? "Updating..." : "Update"}
         </button>
       </form>
     </div>

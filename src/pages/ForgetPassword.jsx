@@ -2,51 +2,52 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/axios";
 import toast from "react-hot-toast";
+import bg from "../assets/registerbg2.jpg";
 
 export default function ForgetPassword() {
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const sendOtp = async (e) => {
     e.preventDefault();
 
-    if (!phone || phone.length !== 10) {
-      return toast.error("Enter valid mobile number");
-    }
+    if (!email) return toast.error("Enter email");
 
     try {
       setLoading(true);
 
-      const res = await api.post("/auth/send-otp", { phone });
+      await api.post("/auth/send-otp", { email });
 
-      // 👉 OTP debug के लिए (project/demo use)
-      toast.success(`OTP: ${res.data.otp}`);
+      toast.success("OTP sent to email");
 
-      // 👉 phone आगे भेज
-      navigate("/verify-otp", { state: { phone } });
+      navigate("/verify-otp", { state: { email } });
 
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to send OTP");
+      toast.error(err.response?.data?.message || "Email not registered");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="center">
-      <form onSubmit={sendOtp}>
-        <h2>Enter Mobile Number</h2>
+    <div className="relative min-h-screen flex items-center justify-center">
+
+      <img src={bg} className="absolute inset-0 w-full h-full object-cover" />
+      <div className="absolute inset-0 bg-black/60" />
+
+      <form onSubmit={sendOtp} className="relative z-10 bg-white/10 p-6 rounded-xl backdrop-blur text-center w-[300px]">
+        <h2 className="text-cyan-400 mb-4">Forgot Password</h2>
 
         <input
-          type="tel"
-          placeholder="Enter mobile number"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          maxLength={10}
+          type="email"
+          placeholder="Enter email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-3 py-2 rounded-md mb-3"
         />
 
-        <button type="submit" disabled={loading}>
+        <button className="w-full bg-cyan-500 py-2 rounded text-white">
           {loading ? "Sending..." : "Send OTP"}
         </button>
       </form>
