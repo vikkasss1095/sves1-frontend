@@ -11,8 +11,8 @@ export default function Login() {
   const { login } = useAuth();
 
   const [form, setForm] = useState({
-    user_email: "",
-    user_password: "",
+    email_input_123: "",
+    password_input_456: "",
   });
 
   const [showPwd, setShowPwd] = useState(false);
@@ -26,18 +26,21 @@ export default function Login() {
     if (loading) return;
 
     setLoading(true);
+
     try {
       const res = await api.post("/auth/login", {
-        email: form.user_email,
-        password: form.user_password,
+        email: form.email_input_123,
+        password: form.password_input_456,
       });
 
       login(res.data.token, res.data.user);
+
       toast.success("Login successful!");
 
       navigate(res.data.user.role === "admin" ? "/admin" : "/vendor", {
         replace: true,
       });
+
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     } finally {
@@ -46,9 +49,8 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="relative min-h-screen w-full flex items-center justify-center overflow-hidden"
-    >
+    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+
       {/* BG */}
       <img
         src={bg}
@@ -56,15 +58,12 @@ export default function Login() {
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/60"></div>
 
-      {/* Center */}
       <div className="relative flex items-center justify-center w-full px-4">
 
-        {/* Rings (thoda bada kiya) */}
+        {/* Rings */}
         <div className="absolute w-[95vw] max-w-[420px] aspect-square rounded-full border border-cyan-400 opacity-30"></div>
-
         <div className="absolute w-[100vw] max-w-[470px] aspect-square rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
 
         {/* Content */}
@@ -79,28 +78,35 @@ export default function Login() {
             autoComplete="off"
             className="space-y-3 w-full flex flex-col items-center"
           >
-            <input type="text" name="fakeuser" className="hidden" />
-            <input type="password" name="fakepass" className="hidden" />
+            {/* Hidden autofill blockers */}
+            <input type="text" name="hidden_user" autoComplete="username" className="hidden" />
+            <input type="password" name="hidden_pass" autoComplete="new-password" className="hidden" />
 
+            {/* Email */}
             <input
-              name="user_email"
-              type="email"
+              name="email_input_123"
+              type="text"
               placeholder="Enter email"
-              value={form.user_email}
+              value={form.email_input_123}
               onChange={handle}
-              className="w-full px-4 py-2 rounded-full bg-white text-black text-sm"
+              autoComplete="off"
+              spellCheck="false"
               required
+              className="w-full px-4 py-2 rounded-full bg-white text-black text-sm"
             />
 
+            {/* Password */}
             <div className="relative w-full">
               <input
-                name="user_password"
+                name="password_input_456"
                 type={showPwd ? "text" : "password"}
                 placeholder="Enter password"
-                value={form.user_password}
+                value={form.password_input_456}
                 onChange={handle}
-                className="w-full px-4 py-2 rounded-full bg-white text-black text-sm"
+                autoComplete="new-password"
+                spellCheck="false"
                 required
+                className="w-full px-4 py-2 rounded-full bg-white text-black text-sm"
               />
 
               <button
@@ -112,16 +118,17 @@ export default function Login() {
               </button>
             </div>
 
+            {/* Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-cyan-500 py-2 rounded-full text-white text-sm"
+              className="w-full bg-cyan-500 py-2 rounded-full text-white text-sm active:scale-95 transition"
             >
               {loading ? "Logging in..." : "Login →"}
             </button>
           </form>
 
-          {/* Links FIXED */}
+          {/* Links */}
           <div className="mt-4 px-2 text-[11px] leading-tight text-center">
             <p className="text-gray-300">
               Forgot Password?{" "}
