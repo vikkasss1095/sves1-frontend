@@ -61,8 +61,7 @@ export default function VerifyOtp() {
         </button>
 
         <p className="mt-2 text-sm">
-          Back to{" "}
-          <Link to="/login">Login</Link>
+          Back to <Link to="/login">Login</Link>
         </p>
       </form>
     </div>

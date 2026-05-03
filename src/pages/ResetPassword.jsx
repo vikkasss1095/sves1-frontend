@@ -19,6 +19,7 @@ export default function ResetPassword() {
   const reset = async (e) => {
     e.preventDefault();
 
+    // ✅ password validation (min 6)
     if (password.length < 6) {
       return toast.error("Password must be at least 6 characters");
     }

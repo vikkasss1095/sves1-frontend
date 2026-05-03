@@ -14,7 +14,11 @@ export default function ForgetPassword() {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    if (!cleanEmail) return toast.error("Enter email");
+    // ✅ email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      return toast.error("Enter valid email");
+    }
 
     try {
       if (loading) return;
@@ -29,7 +33,7 @@ export default function ForgetPassword() {
       navigate("/verify-otp", { state: { email: cleanEmail } });
 
     } catch (err) {
-      toast.error(err.response?.data?.message || "Email not registered");
+      toast.error(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -37,7 +41,6 @@ export default function ForgetPassword() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4">
-
       <img src={bg} className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-0 bg-black/60" />
 
@@ -51,8 +54,8 @@ export default function ForgetPassword() {
           type="email"
           placeholder="Enter email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
           autoComplete="off"
+          onChange={(e) => setEmail(e.target.value)}
           className="w-full px-3 py-2 rounded-md mb-3 text-black"
         />
 
