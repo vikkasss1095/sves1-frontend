@@ -9,9 +9,17 @@ import ForgotPassword from "./pages/ForgetPassword.jsx";
 import VerifyOtp from "./pages/VerifyOtp.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 
-// Vendor Components
+// 🔥 Vendor Components (Sahi Imports)
 import VendorLayout from "./VendorDashboard/VendorLayout.jsx";
 import VendorDashboard from "./VendorDashboard/Dashboard.jsx";
+import VendorAnalytics from "./VendorDashboard/Analytics.jsx"; // Missing tha
+import VendorDocuments from "./VendorDashboard/Documents.jsx"; // Missing tha
+import VendorNotifications from "./VendorDashboard/Notifications.jsx"; // Missing tha
+import VendorPayments from "./VendorDashboard/Payments.jsx"; // Missing tha
+import VendorProfile from "./VendorDashboard/Profile.jsx"; // Missing tha
+import VendorRatings from "./VendorDashboard/Ratings.jsx"; // Missing tha
+import VendorSettings from "./VendorDashboard/Settings.jsx"; // Missing tha
+import VendorTasks from "./VendorDashboard/Tasks.jsx"; // Missing tha
 
 // Admin Components
 import AdminLayout from "./AdminDashboard/AdminLayout.jsx";
@@ -27,7 +35,6 @@ import Evaluation from "./AdminDashboard/Evaluation.jsx";
 // 🔒 Protected Route Logic
 const ProtectedRoute = ({ children, role }) => {
   const { user, loading } = useAuth();
-
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#0a0a0a]">
@@ -35,27 +42,20 @@ const ProtectedRoute = ({ children, role }) => {
       </div>
     );
   }
-
   if (!user) return <Navigate to="/login" replace />;
-
   if (role && user.role !== role) {
     return <Navigate to={user.role === 'admin' ? '/admin' : '/vendor'} replace />;
   }
-
   return children;
 };
 
-// 🌐 Public Route Logic (Fixed for Admin/Vendor refresh)
+// 🌐 Public Route Logic
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
-
   if (loading) return null;
-
   if (user) {
-    // Role ke hisaab se sahi dashboard par bhejta hai
     return <Navigate to={user.role === "admin" ? "/admin" : "/vendor"} replace />;
   }
-
   return children;
 };
 
@@ -64,9 +64,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Toaster position="top-right" reverseOrder={false} />
-
         <Routes>
-          {/* Default Redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
           {/* Auth Routes */}
@@ -76,15 +74,23 @@ export default function App() {
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* Vendor Dashboard Routes */}
+          {/* 🔥 VENDOR FULL ROUTES (Fixed) */}
           <Route
             path="/vendor"
             element={<ProtectedRoute role="vendor"><VendorLayout /></ProtectedRoute>}
           >
             <Route index element={<VendorDashboard />} />
+            <Route path="analytics" element={<VendorAnalytics />} />
+            <Route path="documents" element={<VendorDocuments />} />
+            <Route path="notifications" element={<VendorNotifications />} />
+            <Route path="payments" element={<VendorPayments />} />
+            <Route path="profile" element={<VendorProfile />} />
+            <Route path="ratings" element={<VendorRatings />} />
+            <Route path="settings" element={<VendorSettings />} />
+            <Route path="tasks" element={<VendorTasks />} />
           </Route>
 
-          {/* Admin Dashboard Routes */}
+          {/* ADMIN FULL ROUTES */}
           <Route
             path="/admin"
             element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}
@@ -99,7 +105,6 @@ export default function App() {
             <Route path="evaluation" element={<Evaluation />} />
           </Route>
 
-          {/* 404 Redirect */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
