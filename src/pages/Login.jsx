@@ -24,8 +24,8 @@ export default function Login() {
   const submit = async (e) => {
     e.preventDefault();
     if (loading) return;
-    setLoading(true);
 
+    setLoading(true);
     try {
       const res = await api.post("/auth/login", {
         email: form.user_email,
@@ -47,90 +47,93 @@ export default function Login() {
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center relative overflow-hidden"
+      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center overflow-hidden px-4 relative"
       style={{ backgroundImage: `url(${bg})` }}
     >
-      {/* Dark Overlay */}
+      {/* overlay */}
       <div className="absolute inset-0 bg-black/60"></div>
 
-      {/* Decorative Rings - Made Responsive with max-w */}
-      <div className="relative flex flex-col items-center justify-center w-full px-4">
-        
-        {/* Outer Rings: Hidden on very small screens or scaled down */}
-        <div className="absolute w-[300px] h-[300px] sm:w-[420px] sm:h-[420px] rounded-full border border-cyan-400 opacity-30 pointer-events-none"></div>
-        <div className="absolute w-[340px] h-[340px] sm:w-[460px] sm:h-[460px] rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40 pointer-events-none"></div>
+      {/* MAIN WRAPPER */}
+      <div className="relative flex flex-col items-center justify-center w-full max-w-[320px]">
 
-        <div className="relative z-10 w-full max-w-[320px] sm:max-w-[400px] text-center">
-          <h2 className="text-cyan-400 text-2xl sm:text-3xl mb-8 tracking-widest font-light">
+        {/* OUTER RING */}
+        <div className="absolute w-full max-w-[460px] aspect-square rounded-full border-2 border-dashed border-cyan-400 opacity-40 animate-spin-slow"></div>
+
+        {/* INNER RING */}
+        <div className="absolute w-full max-w-[420px] aspect-square rounded-full border border-cyan-400 opacity-30"></div>
+
+        {/* CONTENT */}
+        <div className="relative z-10 text-center w-full">
+
+          <h2 className="text-cyan-400 text-xl sm:text-2xl mb-6 tracking-widest">
             LOGIN
           </h2>
 
-          <form onSubmit={submit} autoComplete="off" className="space-y-5">
-            {/* Chrome autofill hack */}
+          <form
+            onSubmit={submit}
+            autoComplete="off"
+            className="space-y-4 flex flex-col items-center"
+          >
+            {/* Chrome autofill fix */}
             <input type="text" name="fakeuser" className="hidden" />
             <input type="password" name="fakepass" className="hidden" />
 
-            {/* Email Input */}
-            <div className="w-full">
-              <input
-                name="user_email"
-                type="email"
-                placeholder="Enter email"
-                value={form.user_email}
-                onChange={handle}
-                autoComplete="off"
-                required
-                className="w-full px-6 py-3 rounded-full bg-white text-black outline-none focus:ring-2 focus:ring-cyan-400 transition-all text-sm sm:text-base"
-              />
-            </div>
+            {/* Email */}
+            <input
+              name="user_email"
+              type="email"
+              placeholder="Enter email"
+              value={form.user_email}
+              onChange={handle}
+              required
+              className="w-full max-w-[280px] px-4 py-2 rounded-full bg-white text-black"
+            />
 
-            {/* Password Input */}
-            <div className="relative w-full">
+            {/* Password */}
+            <div className="relative w-full max-w-[280px]">
               <input
                 name="user_password"
                 type={showPwd ? "text" : "password"}
                 placeholder="Enter password"
                 value={form.user_password}
                 onChange={handle}
-                autoComplete="new-password"
                 required
-                className="w-full px-6 py-3 rounded-full bg-white text-black outline-none focus:ring-2 focus:ring-cyan-400 transition-all text-sm sm:text-base"
+                className="w-full px-4 py-2 rounded-full bg-white text-black"
               />
+
               <button
                 type="button"
                 onClick={() => setShowPwd(!showPwd)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-cyan-600 transition-colors"
+                className="absolute right-3 top-2"
               >
-                {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
 
-            {/* Submit Button */}
+            {/* Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-cyan-500 hover:bg-cyan-600 py-3 rounded-full text-white font-semibold tracking-wide transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base shadow-lg"
+              className="w-full max-w-[280px] bg-cyan-500 py-2 rounded-full text-white"
             >
               {loading ? "Logging in..." : "Login →"}
             </button>
           </form>
 
-          {/* Links Section */}
-          <div className="mt-6 space-y-2">
-            <p className="text-gray-300 text-xs sm:text-sm">
-              Forgot Password?{" "}
-              <Link to="/forgot-password" size="sm" className="text-cyan-400 hover:underline">
-                Reset here
-              </Link>
-            </p>
+          {/* Links */}
+          <p className="text-gray-300 mt-4 text-xs sm:text-sm">
+            Forgot Password?{" "}
+            <Link to="/forgot-password" className="text-cyan-400">
+              Reset here
+            </Link>
+          </p>
 
-            <p className="text-gray-300 text-xs sm:text-sm">
-              Don’t have an account?{" "}
-              <Link to="/register" className="text-red-400 font-medium hover:underline">
-                Register Here..
-              </Link>
-            </p>
-          </div>
+          <p className="text-gray-300 mt-2 text-xs sm:text-sm">
+            Don’t have an account?{" "}
+            <Link to="/register" className="text-red-400">
+              Register Here..
+            </Link>
+          </p>
         </div>
       </div>
     </div>
