@@ -23,12 +23,12 @@ export default function Register() {
   const handle = (e) => {
     const { name, value } = e.target;
 
-    // 🔥 PHONE LIMIT (10 digit)
+    // 🔥 phone max 10 digits
     if (name === "phone_number") {
       if (!/^\d{0,10}$/.test(value)) return;
     }
 
-    // 🔥 PASSWORD LIMIT (max 6)
+    // 🔥 password max 6
     if (name === "user_password") {
       if (value.length > 6) return;
     }
@@ -37,23 +37,20 @@ export default function Register() {
   };
 
   const validate = () => {
-    // EMAIL VALIDATION
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailRegex.test(form.user_email)) {
-      toast.error("Enter valid email");
+      toast.error("Invalid email");
       return false;
     }
 
-    // PHONE VALIDATION
     if (form.phone_number.length !== 10) {
       toast.error("Phone must be 10 digits");
       return false;
     }
 
-    // PASSWORD VALIDATION
     if (form.user_password.length !== 6) {
-      toast.error("Password must be exactly 6 characters");
+      toast.error("Password must be 6 characters");
       return false;
     }
 
@@ -67,7 +64,6 @@ export default function Register() {
     if (!validate()) return;
 
     setLoading(true);
-
     try {
       await api.post("/auth/register", {
         name: form.user_name,
@@ -89,21 +85,26 @@ export default function Register() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4">
+    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden px-4">
 
       {/* BG */}
-      <img src={bg} className="absolute inset-0 w-full h-full object-cover" />
+      <img src={bg} alt="bg" className="absolute inset-0 w-full h-full object-cover" />
       <div className="absolute inset-0 bg-black/60"></div>
 
-      <div className="relative z-10 w-full max-w-[420px] p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
+      <div className="relative z-10 w-full max-w-[380px] sm:max-w-[420px] 
+                      p-5 sm:p-6 
+                      bg-white/10 backdrop-blur-xl 
+                      border border-white/20 
+                      rounded-2xl">
 
-        <h2 className="text-xl text-cyan-400 text-center mb-4">
+        <h2 className="text-lg sm:text-xl text-cyan-400 text-center mb-4">
           Register Here
         </h2>
 
+        {/* 🔥 FORM */}
         <form onSubmit={submit} autoComplete="off" className="space-y-3">
 
-          {/* 🔥 AUTOFILL BLOCK */}
+          {/* 🔥 Autofill block (important) */}
           <input type="text" name="fake_user" autoComplete="username" className="hidden" />
           <input type="password" name="fake_pass" autoComplete="new-password" className="hidden" />
 
@@ -114,8 +115,7 @@ export default function Register() {
             onChange={handle}
             autoComplete="off"
             placeholder="Enter username"
-            className="w-full px-3 py-2 rounded bg-white text-black text-sm"
-            required
+            className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
           />
 
           {/* Email */}
@@ -126,8 +126,7 @@ export default function Register() {
             onChange={handle}
             autoComplete="off"
             placeholder="Enter email"
-            className="w-full px-3 py-2 rounded bg-white text-black text-sm"
-            required
+            className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
           />
 
           {/* Company */}
@@ -136,8 +135,8 @@ export default function Register() {
             value={form.company_name}
             onChange={handle}
             autoComplete="off"
-            placeholder="Company name"
-            className="w-full px-3 py-2 rounded bg-white text-black text-sm"
+            placeholder="Enter company name"
+            className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
           />
 
           {/* Phone */}
@@ -146,9 +145,8 @@ export default function Register() {
             value={form.phone_number}
             onChange={handle}
             autoComplete="off"
-            placeholder="Phone (10 digit)"
-            className="w-full px-3 py-2 rounded bg-white text-black text-sm"
-            required
+            placeholder="Enter phone"
+            className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
           />
 
           {/* GST */}
@@ -157,8 +155,8 @@ export default function Register() {
             value={form.gst_number}
             onChange={handle}
             autoComplete="off"
-            placeholder="GST"
-            className="w-full px-3 py-2 rounded bg-white text-black text-sm"
+            placeholder="Enter GST"
+            className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
           />
 
           {/* Password */}
@@ -167,11 +165,10 @@ export default function Register() {
               name="user_password"
               type={showPwd ? "text" : "password"}
               value={form.user_password}
-              onChange={handle}
               autoComplete="new-password"
-              placeholder="Password (6 char)"
-              className="w-full px-3 py-2 rounded bg-white text-black text-sm pr-10"
-              required
+              onChange={handle}
+              placeholder="Enter password"
+              className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm pr-10"
             />
 
             <button
@@ -185,7 +182,7 @@ export default function Register() {
 
           <button
             disabled={loading}
-            className="w-full py-2 bg-red-500 text-white rounded active:scale-95"
+            className="w-full py-2 bg-red-500 text-white rounded-md text-sm sm:text-base active:scale-95 transition"
           >
             {loading ? "Registering..." : "Register"}
           </button>
@@ -197,7 +194,6 @@ export default function Register() {
             Login Here..
           </Link>
         </p>
-
       </div>
     </div>
   );
