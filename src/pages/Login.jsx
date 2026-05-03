@@ -23,7 +23,9 @@ export default function Login() {
 
   const submit = async (e) => {
     e.preventDefault();
+
     if (loading) return;
+
     setLoading(true);
 
     try {
@@ -33,11 +35,13 @@ export default function Login() {
       });
 
       login(res.data.token, res.data.user);
+
       toast.success("Login successful!");
 
       navigate(res.data.user.role === "admin" ? "/admin" : "/vendor", {
         replace: true,
       });
+
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     } finally {
@@ -47,87 +51,97 @@ export default function Login() {
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center bg-cover bg-center relative overflow-hidden"
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: `url(${bg})` }}
     >
-      {/* Absolute Overlay */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]"></div>
+      <div className="absolute inset-0 bg-black/60"></div>
 
-      {/* Main Container - max-w-xs (20rem) for mobile screens */}
-      <div className="relative z-10 w-full px-6 flex flex-col items-center">
-        
-        {/* Responsive Rings - Scaled using 'vw' to never exceed screen width */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
-          <div className="w-[85vw] h-[85vw] max-w-[400px] max-h-[400px] rounded-full border border-cyan-400/30"></div>
-          <div className="absolute w-[95vw] h-[95vw] max-w-[440px] max-h-[440px] rounded-full border border-dashed border-cyan-400/20 animate-[spin_30s_linear_infinite]"></div>
-        </div>
+      <div className="relative flex flex-col items-center justify-center">
 
-        {/* Content Box */}
-        <div className="w-full max-w-xs flex flex-col items-center text-center">
-          <h2 className="text-cyan-400 text-3xl sm:text-4xl mb-10 tracking-[0.2em] font-light uppercase">
+        {/* Rings */}
+        <div className="absolute w-[420px] h-[420px] rounded-full border border-cyan-400 opacity-30"></div>
+        <div className="absolute w-[460px] h-[460px] rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
+
+        <div className="relative text-center">
+
+          <h2 className="text-cyan-400 text-2xl mb-6 tracking-widest">
             LOGIN
           </h2>
 
-          <form onSubmit={submit} className="w-full space-y-4">
-            {/* Input Wrapper ensures field stays inside phone edges */}
-            <div className="w-full">
-              <input
-                name="user_email"
-                type="email"
-                placeholder="Enter email"
-                value={form.user_email}
-                onChange={handle}
-                required
-                className="w-full px-5 py-3 rounded-full bg-[#f0f0f0] text-black outline-none border-none text-sm placeholder:text-gray-500"
-              />
-            </div>
+          <form onSubmit={submit} autoComplete="off" className="space-y-4">
 
-            <div className="w-full relative">
+            {/* Chrome autofill hack */}
+            <input type="text" name="fakeuser" style={{ display: "none" }} />
+            <input type="password" name="fakepass" style={{ display: "none" }} />
+
+            {/* Email */}
+            <input
+              name="user_email"
+              type="email"
+              placeholder="Enter email"
+              value={form.user_email}
+              onChange={handle}
+              autoComplete="off"
+              required
+              className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
+            />
+
+            {/* Password */}
+            <div className="relative">
               <input
                 name="user_password"
                 type={showPwd ? "text" : "password"}
                 placeholder="Enter password"
                 value={form.user_password}
                 onChange={handle}
+                autoComplete="new-password"
                 required
-                className="w-full px-5 py-3 rounded-full bg-[#f0f0f0] text-black outline-none border-none text-sm placeholder:text-gray-500"
+                className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
               />
+
               <button
                 type="button"
                 onClick={() => setShowPwd(!showPwd)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600"
+                className="absolute right-3 top-2"
               >
-                {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
 
+            {/* Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#00acc1] hover:bg-cyan-600 py-3 rounded-full text-white font-bold tracking-widest text-sm transition-transform active:scale-95 disabled:opacity-50"
+              className="w-[280px] bg-cyan-500 py-2 rounded-full text-white"
             >
-              {loading ? "LOGGING IN..." : "LOGIN →"}
+              {loading ? "Logging in..." : "Login →"}
             </button>
+
           </form>
 
-          {/* Footer Navigation */}
-          <div className="mt-6 space-y-2">
-            <p className="text-gray-300 text-xs tracking-tight">
-              Forgot Password?{" "}
-              <Link to="/forgot-password" size="sm" className="text-cyan-400 hover:underline">
-                Reset here
-              </Link>
-            </p>
+          {/* 🔥 Forgot Password Link */}
+          <p className="text-gray-300 mt-4 text-sm">
+            Forgot Password?{" "}
+            <Link to="/forgot-password" className="text-cyan-400">
+              Reset here
+            </Link>
+          </p>
 
-            <p className="text-gray-300 text-xs tracking-tight">
-              Don’t have an account?{" "}
-              <Link to="/register" className="text-red-400 font-medium hover:underline">
-                Register Here..
-              </Link>
-            </p>
-          </div>
+          {/* Register */}
+          <p className="text-gray-300 mt-2 text-sm">
+            Don’t have an account?{" "}
+            <Link to="/register" className="text-red-400">
+              Register Here..
+            </Link>
+          </p>
+
         </div>
       </div>
     </div>
   );
 }
+
+
+
+
+
