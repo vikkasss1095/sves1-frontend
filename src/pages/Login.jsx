@@ -47,31 +47,31 @@ export default function Login() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center px-4"
+      className="fixed inset-0 w-full h-full bg-cover bg-center bg-no-repeat flex items-center justify-center"
       style={{ backgroundImage: `url(${bg})` }}
     >
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/60"></div>
 
-      {/* Main Container */}
-      <div className="relative flex items-center justify-center w-full max-w-md">
+      {/* Center Wrapper */}
+      <div className="relative flex items-center justify-center w-full h-full px-4">
 
         {/* Rings */}
-        <div className="absolute w-[90vw] max-w-[400px] aspect-square rounded-full border border-cyan-400 opacity-30"></div>
+        <div className="absolute w-[85vw] max-w-[380px] aspect-square rounded-full border border-cyan-400 opacity-30"></div>
 
-        <div className="absolute w-[95vw] max-w-[450px] aspect-square rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
+        <div className="absolute w-[92vw] max-w-[430px] aspect-square rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
 
-        {/* Form Box */}
-        <div className="relative z-10 flex flex-col items-center justify-center w-full px-6 py-10 text-center">
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center justify-center text-center w-full max-w-[300px]">
 
-          <h2 className="text-cyan-400 text-xl sm:text-2xl mb-6 tracking-widest">
+          <h2 className="text-cyan-400 text-xl sm:text-2xl mb-5 tracking-widest">
             LOGIN
           </h2>
 
           <form
             onSubmit={submit}
             autoComplete="off"
-            className="space-y-4 w-full flex flex-col items-center"
+            className="space-y-3 w-full flex flex-col items-center"
           >
             {/* Autofill hack */}
             <input type="text" name="fakeuser" className="hidden" />
@@ -86,11 +86,11 @@ export default function Login() {
               onChange={handle}
               autoComplete="off"
               required
-              className="w-full max-w-[280px] px-4 py-2 rounded-full bg-white text-black text-sm sm:text-base"
+              className="w-full px-4 py-2 rounded-full bg-white text-black text-sm"
             />
 
             {/* Password */}
-            <div className="relative w-full max-w-[280px]">
+            <div className="relative w-full">
               <input
                 name="user_password"
                 type={showPwd ? "text" : "password"}
@@ -99,7 +99,7 @@ export default function Login() {
                 onChange={handle}
                 autoComplete="new-password"
                 required
-                className="w-full px-4 py-2 rounded-full bg-white text-black text-sm sm:text-base"
+                className="w-full px-4 py-2 rounded-full bg-white text-black text-sm"
               />
 
               <button
@@ -115,27 +115,29 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full max-w-[280px] bg-cyan-500 py-2 rounded-full text-white text-sm sm:text-base"
+              className="w-full bg-cyan-500 py-2 rounded-full text-white text-sm"
             >
               {loading ? "Logging in..." : "Login →"}
             </button>
           </form>
 
-          {/* Forgot Password */}
-          <p className="text-gray-300 mt-4 text-xs sm:text-sm">
-            Forgot Password?{" "}
-            <Link to="/forgot-password" className="text-cyan-400">
-              Reset here
-            </Link>
-          </p>
+          {/* Links */}
+          <div className="mt-3 text-center text-xs leading-tight">
+            <p className="text-gray-300">
+              Forgot Password?{" "}
+              <Link to="/forgot-password" className="text-cyan-400">
+                Reset here
+              </Link>
+            </p>
 
-          {/* Register */}
-          <p className="text-gray-300 mt-2 text-xs sm:text-sm">
-            Don’t have an account?{" "}
-            <Link to="/register" className="text-red-400">
-              Register Here..
-            </Link>
-          </p>
+            <p className="text-gray-300 mt-1">
+              Don’t have an account?{" "}
+              <Link to="/register" className="text-red-400">
+                Register Here..
+              </Link>
+            </p>
+          </div>
+
         </div>
       </div>
     </div>
