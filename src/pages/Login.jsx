@@ -23,11 +23,9 @@ export default function Login() {
 
   const submit = async (e) => {
     e.preventDefault();
-
     if (loading) return;
 
     setLoading(true);
-
     try {
       const res = await api.post("/auth/login", {
         email: form.user_email,
@@ -35,13 +33,11 @@ export default function Login() {
       });
 
       login(res.data.token, res.data.user);
-
       toast.success("Login successful!");
 
       navigate(res.data.user.role === "admin" ? "/admin" : "/vendor", {
         replace: true,
       });
-
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     } finally {
@@ -51,28 +47,35 @@ export default function Login() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      className="min-h-screen flex items-center justify-center bg-cover bg-center px-4"
       style={{ backgroundImage: `url(${bg})` }}
     >
+      {/* Overlay */}
       <div className="absolute inset-0 bg-black/60"></div>
 
-      <div className="relative flex flex-col items-center justify-center">
+      {/* Main Container */}
+      <div className="relative flex items-center justify-center w-full max-w-md">
 
         {/* Rings */}
-        <div className="absolute w-[420px] h-[420px] rounded-full border border-cyan-400 opacity-30"></div>
-        <div className="absolute w-[460px] h-[460px] rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
+        <div className="absolute w-[90vw] max-w-[400px] aspect-square rounded-full border border-cyan-400 opacity-30"></div>
 
-        <div className="relative text-center">
+        <div className="absolute w-[95vw] max-w-[450px] aspect-square rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
 
-          <h2 className="text-cyan-400 text-2xl mb-6 tracking-widest">
+        {/* Form Box */}
+        <div className="relative z-10 flex flex-col items-center justify-center w-full px-6 py-10 text-center">
+
+          <h2 className="text-cyan-400 text-xl sm:text-2xl mb-6 tracking-widest">
             LOGIN
           </h2>
 
-          <form onSubmit={submit} autoComplete="off" className="space-y-4">
-
-            {/* Chrome autofill hack */}
-            <input type="text" name="fakeuser" style={{ display: "none" }} />
-            <input type="password" name="fakepass" style={{ display: "none" }} />
+          <form
+            onSubmit={submit}
+            autoComplete="off"
+            className="space-y-4 w-full flex flex-col items-center"
+          >
+            {/* Autofill hack */}
+            <input type="text" name="fakeuser" className="hidden" />
+            <input type="password" name="fakepass" className="hidden" />
 
             {/* Email */}
             <input
@@ -83,11 +86,11 @@ export default function Login() {
               onChange={handle}
               autoComplete="off"
               required
-              className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
+              className="w-full max-w-[280px] px-4 py-2 rounded-full bg-white text-black text-sm sm:text-base"
             />
 
             {/* Password */}
-            <div className="relative">
+            <div className="relative w-full max-w-[280px]">
               <input
                 name="user_password"
                 type={showPwd ? "text" : "password"}
@@ -96,13 +99,13 @@ export default function Login() {
                 onChange={handle}
                 autoComplete="new-password"
                 required
-                className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
+                className="w-full px-4 py-2 rounded-full bg-white text-black text-sm sm:text-base"
               />
 
               <button
                 type="button"
                 onClick={() => setShowPwd(!showPwd)}
-                className="absolute right-3 top-2"
+                className="absolute right-3 top-2 text-gray-600"
               >
                 {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
@@ -112,15 +115,14 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-[280px] bg-cyan-500 py-2 rounded-full text-white"
+              className="w-full max-w-[280px] bg-cyan-500 py-2 rounded-full text-white text-sm sm:text-base"
             >
               {loading ? "Logging in..." : "Login →"}
             </button>
-
           </form>
 
-          {/* 🔥 Forgot Password Link */}
-          <p className="text-gray-300 mt-4 text-sm">
+          {/* Forgot Password */}
+          <p className="text-gray-300 mt-4 text-xs sm:text-sm">
             Forgot Password?{" "}
             <Link to="/forgot-password" className="text-cyan-400">
               Reset here
@@ -128,20 +130,14 @@ export default function Login() {
           </p>
 
           {/* Register */}
-          <p className="text-gray-300 mt-2 text-sm">
+          <p className="text-gray-300 mt-2 text-xs sm:text-sm">
             Don’t have an account?{" "}
             <Link to="/register" className="text-red-400">
               Register Here..
             </Link>
           </p>
-
         </div>
       </div>
     </div>
   );
 }
-
-
-
-
-
