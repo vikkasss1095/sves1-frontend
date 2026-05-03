@@ -10,7 +10,6 @@ export default function ForgetPassword() {
 
   const sendOtp = async (e) => {
     e.preventDefault();
-    console.log("Clicked"); // 🔎 debug
 
     if (!phone || phone.length !== 10) {
       return toast.error("Enter valid mobile number");
@@ -20,13 +19,14 @@ export default function ForgetPassword() {
       setLoading(true);
 
       const res = await api.post("/auth/send-otp", { phone });
-      console.log("RES:", res.data); // 🔎 debug
 
+      // 👉 OTP debug के लिए (project/demo use)
       toast.success(`OTP: ${res.data.otp}`);
+
+      // 👉 phone आगे भेज
       navigate("/verify-otp", { state: { phone } });
 
     } catch (err) {
-      console.log("ERR:", err?.response?.data || err.message);
       toast.error(err.response?.data?.message || "Failed to send OTP");
     } finally {
       setLoading(false);
@@ -40,6 +40,7 @@ export default function ForgetPassword() {
 
         <input
           type="tel"
+          placeholder="Enter mobile number"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           maxLength={10}

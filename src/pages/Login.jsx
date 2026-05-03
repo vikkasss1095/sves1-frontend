@@ -51,24 +51,25 @@ export default function Login() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      className="min-h-screen flex items-center justify-center bg-cover bg-center px-4"
       style={{ backgroundImage: `url(${bg})` }}
     >
+      {/* Overlay */}
       <div className="absolute inset-0 bg-black/60"></div>
 
-      <div className="relative flex flex-col items-center justify-center">
+      <div className="relative flex flex-col items-center justify-center w-full">
 
         {/* Rings */}
-        <div className="absolute w-[420px] h-[420px] rounded-full border border-cyan-400 opacity-30"></div>
-        <div className="absolute w-[460px] h-[460px] rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
+        <div className="absolute w-[300px] h-[300px] sm:w-[420px] sm:h-[420px] rounded-full border border-cyan-400 opacity-30"></div>
+        <div className="absolute w-[340px] h-[340px] sm:w-[460px] sm:h-[460px] rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow opacity-40"></div>
 
-        <div className="relative text-center">
+        <div className="relative text-center w-full flex flex-col items-center">
 
           <h2 className="text-cyan-400 text-2xl mb-6 tracking-widest">
             LOGIN
           </h2>
 
-          <form onSubmit={submit} autoComplete="off" className="space-y-4">
+          <form onSubmit={submit} autoComplete="off" className="space-y-4 w-full flex flex-col items-center">
 
             {/* Chrome autofill hack */}
             <input type="text" name="fakeuser" style={{ display: "none" }} />
@@ -83,11 +84,11 @@ export default function Login() {
               onChange={handle}
               autoComplete="off"
               required
-              className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
+              className="w-full max-w-[280px] px-4 py-2 rounded-full bg-white text-black"
             />
 
             {/* Password */}
-            <div className="relative">
+            <div className="relative w-full max-w-[280px]">
               <input
                 name="user_password"
                 type={showPwd ? "text" : "password"}
@@ -96,7 +97,7 @@ export default function Login() {
                 onChange={handle}
                 autoComplete="new-password"
                 required
-                className="w-[280px] px-4 py-2 rounded-full bg-white text-black"
+                className="w-full px-4 py-2 rounded-full bg-white text-black"
               />
 
               <button
@@ -112,14 +113,14 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-[280px] bg-cyan-500 py-2 rounded-full text-white"
+              className="w-full max-w-[280px] bg-cyan-500 py-2 rounded-full text-white"
             >
               {loading ? "Logging in..." : "Login →"}
             </button>
 
           </form>
 
-          {/* 🔥 Forgot Password Link */}
+          {/* Links */}
           <p className="text-gray-300 mt-4 text-sm">
             Forgot Password?{" "}
             <Link to="/forgot-password" className="text-cyan-400">
@@ -127,7 +128,6 @@ export default function Login() {
             </Link>
           </p>
 
-          {/* Register */}
           <p className="text-gray-300 mt-2 text-sm">
             Don’t have an account?{" "}
             <Link to="/register" className="text-red-400">
@@ -140,8 +140,3 @@ export default function Login() {
     </div>
   );
 }
-
-
-
-
-
