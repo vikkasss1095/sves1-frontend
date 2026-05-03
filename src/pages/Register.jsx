@@ -28,7 +28,6 @@ export default function Register() {
     if (loading) return;
 
     setLoading(true);
-
     try {
       await api.post("/auth/register", {
         name: form.user_name,
@@ -52,18 +51,21 @@ export default function Register() {
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden px-4">
 
-      {/* ✅ BG FIX */}
+      {/* BG */}
       <img
         src={bg}
         alt="bg"
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/60"></div>
 
-      {/* Card */}
-      <div className="relative z-10 w-full max-w-sm sm:max-w-md p-5 sm:p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl">
+      {/* 🔥 CARD FIX */}
+      <div className="relative z-10 w-full max-w-[380px] sm:max-w-[420px] 
+                      p-5 sm:p-6 
+                      bg-white/10 backdrop-blur-xl 
+                      border border-white/20 
+                      rounded-2xl">
 
         <h2 className="text-lg sm:text-xl text-cyan-400 text-center mb-4">
           Register Here
@@ -71,10 +73,11 @@ export default function Register() {
 
         <form onSubmit={submit} autoComplete="off" className="space-y-3">
 
-          {/* Autofill hack */}
+          {/* Autofill block */}
           <input type="text" className="hidden" />
           <input type="password" className="hidden" />
 
+          {/* INPUT COMMON CLASS */}
           {/* Username */}
           <div>
             <label className="text-xs sm:text-sm text-gray-300">
@@ -82,10 +85,9 @@ export default function Register() {
             </label>
             <input
               name="user_name"
-              type="text"
-              placeholder="Enter username"
               value={form.user_name}
               onChange={handle}
+              placeholder="Enter username"
               className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
             />
           </div>
@@ -97,10 +99,9 @@ export default function Register() {
             </label>
             <input
               name="user_email"
-              type="email"
-              placeholder="Enter email"
               value={form.user_email}
               onChange={handle}
+              placeholder="Enter email"
               className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
             />
           </div>
@@ -112,10 +113,9 @@ export default function Register() {
             </label>
             <input
               name="company_name"
-              type="text"
-              placeholder="Enter company name"
               value={form.company_name}
               onChange={handle}
+              placeholder="Enter company name"
               className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
             />
           </div>
@@ -127,10 +127,9 @@ export default function Register() {
             </label>
             <input
               name="phone_number"
-              type="text"
-              placeholder="Enter phone"
               value={form.phone_number}
               onChange={handle}
+              placeholder="Enter phone"
               className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
             />
           </div>
@@ -142,10 +141,9 @@ export default function Register() {
             </label>
             <input
               name="gst_number"
-              type="text"
-              placeholder="Enter GST"
               value={form.gst_number}
               onChange={handle}
+              placeholder="Enter GST"
               className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm"
             />
           </div>
@@ -159,9 +157,9 @@ export default function Register() {
             <input
               name="user_password"
               type={showPwd ? "text" : "password"}
-              placeholder="Enter password"
               value={form.user_password}
               onChange={handle}
+              placeholder="Enter password"
               className="w-full mt-1 px-3 py-2 rounded-md bg-white text-black text-sm pr-10"
             />
 
@@ -177,13 +175,13 @@ export default function Register() {
           {/* Button */}
           <button
             disabled={loading}
-            className="w-full py-2 bg-red-500 text-white rounded-md text-sm sm:text-base"
+            className="w-full py-2 bg-red-500 text-white rounded-md text-sm sm:text-base active:scale-95 transition"
           >
             {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
-        <p className="text-center text-[11px] sm:text-xs text-gray-300 mt-3">
+        <p className="text-center text-xs text-gray-300 mt-3">
           Already have account?{" "}
           <Link to="/login" className="text-red-400">
             Login Here..
