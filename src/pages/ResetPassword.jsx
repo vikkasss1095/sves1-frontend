@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import api from "../utils/axios";
 import toast from "react-hot-toast";
 
@@ -19,20 +19,25 @@ export default function ResetPassword() {
   const reset = async (e) => {
     e.preventDefault();
 
+    if (password.length < 6) {
+      return toast.error("Password must be at least 6 characters");
+    }
+
     try {
+      if (loading) return;
       setLoading(true);
 
-      await api.post("/auth/reset-password", {
+      await api.post("/auth/forgot-password/reset-password", {
         email: state.email,
-        newPassword: password,
+        newPassword: password.trim(),
       });
 
-      toast.success("Password updated");
+      toast.success("Password updated successfully");
 
       navigate("/login");
 
-    } catch {
-      toast.error("Error resetting password");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Reset failed");
     } finally {
       setLoading(false);
     }
@@ -50,9 +55,13 @@ export default function ResetPassword() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button>
-          {loading ? "Updating..." : "Update"}
+        <button disabled={loading}>
+          {loading ? "Updating..." : "Update Password"}
         </button>
+
+        <p className="mt-2 text-sm">
+          Back to <Link to="/login">Login</Link>
+        </p>
       </form>
     </div>
   );
