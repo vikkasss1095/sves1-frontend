@@ -22,7 +22,7 @@ function StatCard({ label, value, icon: Icon, gradient }) {
         <Icon className="w-6 h-6 opacity-80" />
       </div>
     </div>
-  );
+  ); 
 }
 
 export default function VendorDashboard() {
