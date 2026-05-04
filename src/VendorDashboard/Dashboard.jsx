@@ -63,7 +63,7 @@ export default function VendorDashboard() {
           <span>⚠ Please complete your profile first</span>
 
           <button
-            onClick={() => window.location.href = "/vendor/profile"}
+       onClick={() => navigate("/vendor/profile")}
             className="bg-red-500 text-white px-4 py-1.5 rounded-lg text-sm"
           >
             Create Account
