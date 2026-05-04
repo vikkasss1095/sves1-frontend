@@ -159,14 +159,14 @@ export default function VendorLayout() {
           {/* 🔥 CREATE ACCOUNT BUTTON */}
           {!user?.profileCompleted ? (
             <button
-                onClick={() => window.location.href = "/vendor/profile"}
+              onClick={() => navigate("/vendor/profile")}
               className="bg-red-500 text-white px-4 py-1.5 rounded-lg text-sm"
             >
               Create Account
             </button>
           ) : (
             <button
-          onClick={() => window.location.href = "/vendor/profile"}
+              onClick={() => navigate("/vendor/profile")}
               className="bg-indigo-500 text-white px-4 py-1.5 rounded-lg text-sm"
             >
               Profile
