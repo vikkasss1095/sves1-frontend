@@ -88,6 +88,7 @@ export default function App() {
             <Route path="ratings" element={<VendorRatings />} />
             <Route path="settings" element={<VendorSettings />} />
             <Route path="tasks" element={<VendorTasks />} />
+            
           </Route>
 
           {/* ADMIN FULL ROUTES */}

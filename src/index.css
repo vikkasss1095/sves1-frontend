@@ -146,3 +146,12 @@ body {
 .animate-spin-slow {
   animation: spinSlow 20s linear infinite;
 }
+
+
+.input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}

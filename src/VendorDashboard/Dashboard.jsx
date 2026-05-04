@@ -57,7 +57,21 @@ export default function VendorDashboard() {
         </p>
       </div>
 
-      {/* ALERT */}
+      {/* 🔥 CREATE ACCOUNT ALERT (NEW) */}
+      {!user?.profileCompleted && (
+        <div className="mb-6 p-4 bg-red-100 border border-red-300 rounded-xl text-red-700 flex justify-between items-center">
+          <span>⚠ Please complete your profile first</span>
+
+          <button
+            onClick={() => window.location.href = "/vendor/profile"}
+            className="bg-red-500 text-white px-4 py-1.5 rounded-lg text-sm"
+          >
+            Create Account
+          </button>
+        </div>
+      )}
+
+      {/* EXISTING ALERT */}
       {!user?.isApproved && (
         <div className="mb-6 p-4 bg-yellow-100 border border-yellow-300 rounded-xl text-yellow-800 text-sm">
           ⚠ Your account is under review by admin
