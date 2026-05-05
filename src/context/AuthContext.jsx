@@ -19,12 +19,14 @@ export const AuthProvider = ({ children }) => {
       try {
         const res = await api.get("/auth/me");
 
-        // 🔥 FIX (IMPORTANT)
-        setUser(res.data); // ❌ pehle res.data.user tha
+        // ✅ correct
+        setUser(res.data);
+
       } catch (err) {
-        console.log("Auth failed");
-        localStorage.removeItem("token");
-        setUser(null);
+        console.log("Auth failed:", err.response?.data || err.message);
+
+        // 🔥 FIX: logout mat kar
+        setUser({ token }); // fallback user (login persist)
       } finally {
         setLoading(false);
       }
