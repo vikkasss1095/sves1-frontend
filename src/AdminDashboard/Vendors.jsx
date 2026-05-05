@@ -1,17 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import {
   Search, CheckCircle2, XCircle,
-  Trash2, ChevronLeft, ChevronRight, Eye
+  Trash2, ChevronLeft, ChevronRight
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../utils/axios";
 import { useNavigate } from "react-router-dom";
-
-const STATUS_TABS = [
-  { value: "", label: "All" },
-  { value: "pending", label: "Pending" },
-  { value: "approved", label: "Approved" },
-];
 
 export default function AdminVendors() {
   const [vendors, setVendors] = useState([]);
@@ -22,7 +16,7 @@ export default function AdminVendors() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate(); // 🔥 NEW
+  const navigate = useNavigate();
 
   const fetchVendors = useCallback(async () => {
     setLoading(true);
@@ -69,7 +63,7 @@ export default function AdminVendors() {
       {/* HEADER */}
       <div className="page-header">
         <h1 className="page-title">Vendor Management</h1>
-        <p className="page-subtitle">{total} vendors</p>
+        <p className="page-subtitle">{total} vendors registered</p>
       </div>
 
       {/* SEARCH */}
@@ -78,7 +72,7 @@ export default function AdminVendors() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Search..."
+            placeholder="Search by name, email, company..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="input-field pl-9"
@@ -93,27 +87,32 @@ export default function AdminVendors() {
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-slate-100">
+              <tr className="bg-slate-100 text-slate-600">
                 <th className="p-3 text-left">Vendor</th>
                 <th>Company</th>
                 <th>Phone</th>
                 <th>Status</th>
-                <th>Action</th>
+                <th className="text-center">Actions</th>
               </tr>
             </thead>
 
             <tbody>
               {vendors.map(v => (
-                <tr key={v._id} className="border-b">
+                <tr key={v._id} className="border-b hover:bg-slate-50 transition">
 
+                  {/* NAME */}
                   <td className="p-3">
                     <p className="font-semibold">{v.name}</p>
                     <p className="text-xs text-gray-500">{v.email}</p>
                   </td>
 
+                  {/* COMPANY */}
                   <td>{v.companyName}</td>
+
+                  {/* PHONE */}
                   <td>{v.phone}</td>
 
+                  {/* STATUS */}
                   <td>
                     <span className={`px-2 py-1 text-xs rounded ${
                       v.isApproved
@@ -124,35 +123,44 @@ export default function AdminVendors() {
                     </span>
                   </td>
 
-                  <td className="flex gap-2 p-2">
+                  {/* ACTIONS */}
+                  <td className="p-3 flex gap-2 justify-center flex-wrap">
 
-                    {/* 🔥 VIEW FULL PROFILE */}
-                    <Eye
-                      className="cursor-pointer text-blue-500"
+                    {/* 🔥 VIEW BUTTON */}
+                    <button
                       onClick={() => navigate(`/admin/vendors/${v._id}`)}
-                    />
+                      className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                    >
+                      View Details
+                    </button>
 
                     {/* APPROVE */}
                     {!v.isApproved && (
-                      <CheckCircle2
+                      <button
                         onClick={() => approve(v._id)}
-                        className="cursor-pointer text-green-500"
-                      />
+                        className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
+                      >
+                        Approve
+                      </button>
                     )}
 
                     {/* REJECT */}
                     {v.isApproved && (
-                      <XCircle
+                      <button
                         onClick={() => reject(v._id)}
-                        className="cursor-pointer text-yellow-500"
-                      />
+                        className="px-2 py-1 text-xs bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                      >
+                        Reject
+                      </button>
                     )}
 
                     {/* DELETE */}
-                    <Trash2
+                    <button
                       onClick={() => deleteV(v._id)}
-                      className="cursor-pointer text-red-500"
-                    />
+                      className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
 
                   </td>
 
