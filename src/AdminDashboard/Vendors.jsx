@@ -1,186 +1,174 @@
 import { useEffect, useState, useCallback } from "react";
-import {
-  Search, CheckCircle2, XCircle,
-  Trash2, ChevronLeft, ChevronRight
-} from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../utils/axios";
 import { useNavigate } from "react-router-dom";
 
-export default function AdminVendors() {
+export default function Vendors() {
   const [vendors, setVendors] = useState([]);
   const [total, setTotal] = useState(0);
   const [pages, setPages] = useState(1);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
+  // 🔥 FETCH DATA
   const fetchVendors = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await api.get("/admin/vendors", {
-        params: { page, limit: 10, search, status }
+      const res = await api.get("/admin/vendors", {
+        params: {
+          page,
+          limit: 10,
+          search,
+        },
       });
-      setVendors(data.vendors);
-      setTotal(data.total);
-      setPages(data.pages);
-    } catch {
+
+      setVendors(res.data.vendors || []);
+      setTotal(res.data.total || 0);
+      setPages(res.data.pages || 1);
+    } catch (err) {
       toast.error("Failed to load vendors");
     } finally {
       setLoading(false);
     }
-  }, [page, search, status]);
+  }, [page, search]);
 
   useEffect(() => {
     fetchVendors();
   }, [fetchVendors]);
 
-  const approve = async (id) => {
-    await api.put(`/admin/vendors/${id}/approve`);
-    toast.success("Approved");
-    fetchVendors();
-  };
-
-  const reject = async (id) => {
-    await api.put(`/admin/vendors/${id}/reject`);
-    toast.success("Rejected");
-    fetchVendors();
-  };
-
-  const deleteV = async (id) => {
-    if (!window.confirm("Delete vendor?")) return;
-    await api.delete(`/admin/vendors/${id}`);
-    toast.success("Deleted");
-    fetchVendors();
-  };
-
   return (
-    <div>
+    <div className="space-y-4">
 
       {/* HEADER */}
-      <div className="page-header">
-        <h1 className="page-title">Vendor Management</h1>
-        <p className="page-subtitle">{total} vendors registered</p>
+      <div>
+        <h1 className="text-xl font-bold text-slate-800">
+          Vendor Management
+        </h1>
+        <p className="text-sm text-slate-500">
+          {total} vendors registered
+        </p>
       </div>
 
       {/* SEARCH */}
-      <div className="card p-4 mb-5 flex gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+      <div className="bg-white p-4 rounded-xl shadow-sm">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+
           <input
             type="text"
             placeholder="Search by name, email, company..."
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="input-field pl-9"
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="w-full pl-9 pr-3 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
       </div>
 
       {/* TABLE */}
-      <div className="card overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+
         {loading ? (
-          <div className="h-40 flex justify-center items-center">Loading...</div>
+          <div className="h-40 flex items-center justify-center">
+            Loading...
+          </div>
         ) : (
           <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-slate-100 text-slate-600">
+
+            {/* HEAD */}
+            <thead className="bg-gray-100 text-gray-600">
+              <tr>
                 <th className="p-3 text-left">Vendor</th>
-                <th>Company</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th className="text-center">Actions</th>
+                <th className="text-left">Company</th>
+                <th className="text-left">Phone</th>
+                <th className="text-left">Status</th>
+                <th className="text-center">Details</th>
               </tr>
             </thead>
 
+            {/* BODY */}
             <tbody>
-              {vendors.map(v => (
-                <tr key={v._id} className="border-b hover:bg-slate-50 transition">
+              {vendors.map((v) => (
+                <tr
+                  key={v._id}
+                  className="border-b hover:bg-gray-50 transition"
+                >
 
                   {/* NAME */}
                   <td className="p-3">
-                    <p className="font-semibold">{v.name}</p>
-                    <p className="text-xs text-gray-500">{v.email}</p>
+                    <p className="font-medium text-slate-800">
+                      {v.name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {v.email}
+                    </p>
                   </td>
 
                   {/* COMPANY */}
-                  <td>{v.companyName}</td>
+                  <td className="text-slate-700">
+                    {v.companyName || "-"}
+                  </td>
 
                   {/* PHONE */}
-                  <td>{v.phone}</td>
+                  <td className="text-slate-700">
+                    {v.phone}
+                  </td>
 
                   {/* STATUS */}
                   <td>
-                    <span className={`px-2 py-1 text-xs rounded ${
-                      v.isApproved
-                        ? "bg-green-100 text-green-600"
-                        : "bg-yellow-100 text-yellow-600"
-                    }`}>
+                    <span
+                      className={`px-2 py-1 text-xs rounded ${
+                        v.isApproved
+                          ? "bg-green-100 text-green-600"
+                          : "bg-yellow-100 text-yellow-600"
+                      }`}
+                    >
                       {v.isApproved ? "Approved" : "Pending"}
                     </span>
                   </td>
 
-                  {/* ACTIONS */}
-                  <td className="p-3 flex gap-2 justify-center flex-wrap">
-
-                    {/* 🔥 VIEW BUTTON */}
+                  {/* BUTTON */}
+                  <td className="text-center">
                     <button
-                      onClick={() => navigate(`/admin/vendors/${v._id}`)}
+                      onClick={() =>
+                        navigate(`/admin/vendors/${v._id}`)
+                      }
                       className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 transition"
                     >
-                      View Details
+                      View Full Details
                     </button>
-
-                    {/* APPROVE */}
-                    {!v.isApproved && (
-                      <button
-                        onClick={() => approve(v._id)}
-                        className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                      >
-                        Approve
-                      </button>
-                    )}
-
-                    {/* REJECT */}
-                    {v.isApproved && (
-                      <button
-                        onClick={() => reject(v._id)}
-                        className="px-2 py-1 text-xs bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                      >
-                        Reject
-                      </button>
-                    )}
-
-                    {/* DELETE */}
-                    <button
-                      onClick={() => deleteV(v._id)}
-                      className="px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-
                   </td>
 
                 </tr>
               ))}
             </tbody>
+
           </table>
         )}
       </div>
 
       {/* PAGINATION */}
       {pages > 1 && (
-        <div className="flex justify-between p-3">
-          <button onClick={() => setPage(p => Math.max(1, p - 1))}>
+        <div className="flex justify-between items-center">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
             <ChevronLeft />
           </button>
 
-          <span>Page {page} / {pages}</span>
+          <span className="text-sm">
+            Page {page} / {pages}
+          </span>
 
-          <button onClick={() => setPage(p => Math.min(pages, p + 1))}>
+          <button
+            onClick={() => setPage((p) => Math.min(pages, p + 1))}
+          >
             <ChevronRight />
           </button>
         </div>
