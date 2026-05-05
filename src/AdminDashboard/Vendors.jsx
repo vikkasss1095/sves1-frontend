@@ -106,7 +106,7 @@ export default function AdminVendors() {
               {/* ✅ VIEW MORE */}
               <td className="p-2">
                 <button
-                  onClick={() => navigate(`/admin/vendordetails/${v._id}`)}
+                  onClick={() => navigate(`/admin/vendor/${v._id}`)}
                   className="bg-blue-500 text-white px-3 py-1 rounded"
                 >
                   View More
