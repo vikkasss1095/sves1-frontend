@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../utils/axios";
+import { useNavigate } from "react-router-dom";
 
 const STATUS_TABS = [
   { value: "", label: "All" },
@@ -20,7 +21,8 @@ export default function AdminVendors() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState(null);
+
+  const navigate = useNavigate(); // 🔥 NEW
 
   const fetchVendors = useCallback(async () => {
     setLoading(true);
@@ -113,18 +115,45 @@ export default function AdminVendors() {
                   <td>{v.phone}</td>
 
                   <td>
-                    {v.isApproved ? "Approved" : "Pending"}
+                    <span className={`px-2 py-1 text-xs rounded ${
+                      v.isApproved
+                        ? "bg-green-100 text-green-600"
+                        : "bg-yellow-100 text-yellow-600"
+                    }`}>
+                      {v.isApproved ? "Approved" : "Pending"}
+                    </span>
                   </td>
 
                   <td className="flex gap-2 p-2">
+
+                    {/* 🔥 VIEW FULL PROFILE */}
                     <Eye
-                      className="cursor-pointer"
-                      onClick={() => setSelected(v)}
+                      className="cursor-pointer text-blue-500"
+                      onClick={() => navigate(`/admin/vendors/${v._id}`)}
                     />
 
-                    <CheckCircle2 onClick={() => approve(v._id)} className="cursor-pointer text-green-500" />
-                    <XCircle onClick={() => reject(v._id)} className="cursor-pointer text-yellow-500" />
-                    <Trash2 onClick={() => deleteV(v._id)} className="cursor-pointer text-red-500" />
+                    {/* APPROVE */}
+                    {!v.isApproved && (
+                      <CheckCircle2
+                        onClick={() => approve(v._id)}
+                        className="cursor-pointer text-green-500"
+                      />
+                    )}
+
+                    {/* REJECT */}
+                    {v.isApproved && (
+                      <XCircle
+                        onClick={() => reject(v._id)}
+                        className="cursor-pointer text-yellow-500"
+                      />
+                    )}
+
+                    {/* DELETE */}
+                    <Trash2
+                      onClick={() => deleteV(v._id)}
+                      className="cursor-pointer text-red-500"
+                    />
+
                   </td>
 
                 </tr>
@@ -134,61 +163,21 @@ export default function AdminVendors() {
         )}
       </div>
 
-      {/* 🔥 FULL PROFILE MODAL */}
-      {selected && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
+      {/* PAGINATION */}
+      {pages > 1 && (
+        <div className="flex justify-between p-3">
+          <button onClick={() => setPage(p => Math.max(1, p - 1))}>
+            <ChevronLeft />
+          </button>
 
-          <div className="bg-white w-[700px] rounded-xl p-6 space-y-5">
+          <span>Page {page} / {pages}</span>
 
-            <h2 className="text-xl font-bold">Vendor Profile</h2>
-
-            {/* BASIC */}
-            <div>
-              <h3 className="font-semibold mb-2">Basic Info</h3>
-              <p>Name: {selected.name}</p>
-              <p>Email: {selected.email}</p>
-              <p>Phone: {selected.phone}</p>
-              <p>Address: {selected.address}</p>
-            </div>
-
-            {/* PROFESSIONAL */}
-            <div>
-              <h3 className="font-semibold mb-2">Professional</h3>
-              <p>Education: {selected.education}</p>
-              <p>Experience: {selected.experience}</p>
-              <p>Skills: {selected.skills?.join(", ")}</p>
-            </div>
-
-            {/* BANK */}
-            <div>
-              <h3 className="font-semibold mb-2">Bank</h3>
-              <p>Account: {selected.bankDetails?.accountNumber}</p>
-              <p>IFSC: {selected.bankDetails?.ifsc}</p>
-              <p>Bank: {selected.bankDetails?.bankName}</p>
-            </div>
-
-            {/* ACTION */}
-            <div className="flex gap-3 mt-4">
-              <button onClick={() => setSelected(null)} className="btn-secondary">
-                Close
-              </button>
-
-              {!selected.isApproved && (
-                <button
-                  onClick={() => {
-                    approve(selected._id);
-                    setSelected(null);
-                  }}
-                  className="btn-primary"
-                >
-                  Approve
-                </button>
-              )}
-            </div>
-
-          </div>
+          <button onClick={() => setPage(p => Math.min(pages, p + 1))}>
+            <ChevronRight />
+          </button>
         </div>
       )}
+
     </div>
   );
 }
