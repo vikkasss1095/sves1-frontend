@@ -8,7 +8,7 @@ export default function VendorDetails() {
   const [vendor, setVendor] = useState(null);
 
   useEffect(() => {
-    api.get(`/admin/vendor/${id}`)
+    api.get(`/admin/vendors/${id}`) 
       .then(res => setVendor(res.data))
       .catch(() => toast.error("Failed to load vendor"));
   }, [id]);
