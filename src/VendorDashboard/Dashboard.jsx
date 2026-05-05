@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ ADDED
 import {
   ClipboardList, CheckCircle2, Clock, TrendingUp,
   CreditCard, Star, AlertCircle,
@@ -28,6 +29,7 @@ function StatCard({ label, value, icon: Icon, gradient }) {
 export default function VendorDashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
+  const navigate = useNavigate(); // ✅ ADDED
 
   useEffect(() => {
     api.get("/vendor/dashboard")
@@ -57,18 +59,17 @@ export default function VendorDashboard() {
         </p>
       </div>
 
-      {/* 🔥 CREATE ACCOUNT ALERT (NEW) */}
+      {/* 🔥 CREATE ACCOUNT ALERT */}
       {!user?.profileCompleted && (
         <div className="mb-6 p-4 bg-red-100 border border-red-300 rounded-xl text-red-700 flex justify-between items-center">
           <span>⚠ Please complete your profile first</span>
 
           <button
-       onClick={() => navigate("/vendor/profile")}
+            onClick={() => navigate("/vendor/profile")} // ✅ NOW WORKING
             className="bg-red-500 text-white px-4 py-1.5 rounded-lg text-sm"
           >
             Create Account
           </button>
-          
         </div>
       )}
 
