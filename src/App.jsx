@@ -2,14 +2,14 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
 
-// Auth Components
+// Auth
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import ForgotPassword from "./pages/ForgetPassword.jsx";
 import VerifyOtp from "./pages/VerifyOtp.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 
-// 🔥 Vendor Components
+// Vendor
 import VendorLayout from "./VendorDashboard/VendorLayout.jsx";
 import VendorDashboard from "./VendorDashboard/Dashboard.jsx";
 import VendorAnalytics from "./VendorDashboard/Analytics.jsx";
@@ -21,11 +21,11 @@ import VendorRatings from "./VendorDashboard/Ratings.jsx";
 import VendorSettings from "./VendorDashboard/Settings.jsx";
 import VendorTasks from "./VendorDashboard/Tasks.jsx";
 
-// 🔥 Admin Components
+// Admin
 import AdminLayout from "./AdminDashboard/AdminLayout.jsx";
 import AdminDashboard from "./AdminDashboard/Dashboard.jsx";
 import Vendors from "./AdminDashboard/Vendors.jsx";
-import VendorDetails from "./AdminDashboard/VendorDetails.jsx"; // 🔥 NEW ADD
+import VendorDetails from "./AdminDashboard/VendorDetails.jsx";
 import Tasks from "./AdminDashboard/Tasks.jsx";
 import Payments from "./AdminDashboard/Payments.jsx";
 import Settings from "./AdminDashboard/Settings.jsx";
@@ -40,8 +40,8 @@ const ProtectedRoute = ({ children, role }) => {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#0a0a0a]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex h-screen items-center justify-center">
+        <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -56,11 +56,18 @@ const ProtectedRoute = ({ children, role }) => {
 };
 
 
-// 🌐 Public Route
+// 🌐 Public Route (🔥 FIXED)
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
-  if (loading) return null;
+  // 🔥 WAIT FOR AUTH LOAD
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   if (user) {
     return <Navigate to={user.role === "admin" ? "/admin" : "/vendor"} replace />;
@@ -78,17 +85,17 @@ export default function App() {
 
         <Routes>
 
-          {/* Default */}
+          {/* ROOT */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
-          {/* Auth */}
+          {/* AUTH */}
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* 🔥 VENDOR ROUTES */}
+          {/* 🔥 VENDOR */}
           <Route
             path="/vendor"
             element={
@@ -108,7 +115,7 @@ export default function App() {
             <Route path="tasks" element={<VendorTasks />} />
           </Route>
 
-          {/* 🔥 ADMIN ROUTES */}
+          {/* 🔥 ADMIN */}
           <Route
             path="/admin"
             element={
@@ -119,10 +126,10 @@ export default function App() {
           >
             <Route index element={<AdminDashboard />} />
 
-            {/* 🔥 Vendors */}
+            {/* Vendors List */}
             <Route path="vendors" element={<Vendors />} />
 
-            {/* 🔥 NEW: Vendor Details Page */}
+            {/* 🔥 Vendor Full Details Page */}
             <Route path="vendors/:id" element={<VendorDetails />} />
 
             <Route path="tasks" element={<Tasks />} />
@@ -133,7 +140,7 @@ export default function App() {
             <Route path="evaluation" element={<Evaluation />} />
           </Route>
 
-          {/* Fallback */}
+          {/* FALLBACK */}
           <Route path="*" element={<Navigate to="/login" replace />} />
 
         </Routes>
