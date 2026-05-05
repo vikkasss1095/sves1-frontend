@@ -1,5 +1,4 @@
-console.log("PROFILE FILE LOADED 🔥");
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "../utils/axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
@@ -370,7 +369,7 @@ const STATES = ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisga
 const ACC_TYPES = ["Savings","Current"];
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function VendorRegister() {
+export default function VendorProfile() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
@@ -506,7 +505,7 @@ export default function VendorRegister() {
     if (form.businessLicense) fd.append("businessLicense", form.businessLicense);
 
     try {
-      const res = await fetch("http://localhost:5000/api/vendor/register", {
+      const res = await fetch("https://sves1-backend.onrender.com/api/vendor/profile", {
         method: "POST",
         body: fd,
       });
