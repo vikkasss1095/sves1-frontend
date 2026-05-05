@@ -1,150 +1,152 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
-import { AuthProvider, useAuth } from "./context/AuthContext.jsx";
+import { useEffect, useState, useCallback } from 'react';
+import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import toast from 'react-hot-toast';
+import api from "../utils/axios";
+import { useNavigate } from "react-router-dom";
 
-// Auth
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import ForgotPassword from "./pages/ForgetPassword.jsx";
-import VerifyOtp from "./pages/VerifyOtp.jsx";
-import ResetPassword from "./pages/ResetPassword.jsx";
+const STATUS_TABS = [
+  { value: '',         label: 'All' },
+  { value: 'pending',  label: 'Pending' },
+  { value: 'approved', label: 'Approved' },
+];
 
-// Vendor
-import VendorLayout from "./VendorDashboard/VendorLayout.jsx";
-import VendorDashboard from "./VendorDashboard/Dashboard.jsx";
-import VendorAnalytics from "./VendorDashboard/Analytics.jsx";
-import VendorDocuments from "./VendorDashboard/Documents.jsx";
-import VendorNotifications from "./VendorDashboard/Notifications.jsx";
-import VendorPayments from "./VendorDashboard/Payments.jsx";
-import VendorProfile from "./VendorDashboard/Profile.jsx";
-import VendorRatings from "./VendorDashboard/Ratings.jsx";
-import VendorSettings from "./VendorDashboard/Settings.jsx";
-import VendorTasks from "./VendorDashboard/Tasks.jsx";
+export default function AdminVendors() {
+  const [vendors, setVendors] = useState([]);
+  const [total, setTotal]     = useState(0);
+  const [pages, setPages]     = useState(1);
+  const [page, setPage]       = useState(1);
+  const [search, setSearch]   = useState('');
+  const [status, setStatus]   = useState('');
+  const [loading, setLoading] = useState(true);
 
-// Admin
-import AdminLayout from "./AdminDashboard/AdminLayout.jsx";
-import AdminDashboard from "./AdminDashboard/Dashboard.jsx";
-import Vendors from "./AdminDashboard/Vendors.jsx";
-import VendorDetails from "./AdminDashboard/VendorDetails.jsx";
-import Tasks from "./AdminDashboard/Tasks.jsx";
-import Payments from "./AdminDashboard/Payments.jsx";
-import Settings from "./AdminDashboard/Settings.jsx";
-import Notifications from "./AdminDashboard/Notifications.jsx";
-import Documents from "./AdminDashboard/Documents.jsx";
-import Evaluation from "./AdminDashboard/Evaluation.jsx";
+  const navigate = useNavigate(); // ✅ ADD
 
+  const fetchVendors = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await api.get('/admin/vendors', { params: { page, limit: 10, search, status } });
+      setVendors(data.vendors);
+      setTotal(data.total);
+      setPages(data.pages);
+    } catch { toast.error('Failed to load vendors'); }
+    finally { setLoading(false); }
+  }, [page, search, status]);
 
-// 🔒 Protected Route
-const ProtectedRoute = ({ children, role }) => {
-  const { user, loading } = useAuth();
+  useEffect(() => { fetchVendors(); }, [fetchVendors]);
 
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (!user) return <Navigate to="/login" replace />;
-
-  if (role && user.role !== role) {
-    return <Navigate to={user.role === "admin" ? "/admin" : "/vendor"} replace />;
-  }
-
-  return children;
-};
-
-
-// 🌐 Public Route (🔥 FIXED)
-const PublicRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  // 🔥 WAIT FOR AUTH LOAD
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (user) {
-    return <Navigate to={user.role === "admin" ? "/admin" : "/vendor"} replace />;
-  }
-
-  return children;
-};
-
-
-export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Toaster position="top-right" reverseOrder={false} />
+    <div>
+      <div className="page-header">
+        <h1 className="page-title">Vendor Management</h1>
+        <p className="page-subtitle">{total} vendor{total !== 1 ? 's' : ''} registered</p>
+      </div>
 
-        <Routes>
+      {/* Filters */}
+      <div className="card p-4 mb-5 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search by name, email, company..."
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(1); }}
+            className="input-field pl-9"
+          />
+        </div>
 
-          {/* ROOT */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+        <div className="flex items-center gap-2">
+          {STATUS_TABS.map(t => (
+            <button
+              key={t.value}
+              onClick={() => { setStatus(t.value); setPage(1); }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-600 border
+              ${status === t.value
+                ? 'bg-brand-600 text-white border-brand-600'
+                : 'bg-white text-slate-500 border-slate-200'}`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
-          {/* AUTH */}
-          <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-          <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
-          <Route path="/verify-otp" element={<VerifyOtp />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+      {/* Table */}
+      <div className="card overflow-hidden">
+        {loading ? (
+          <div className="flex items-center justify-center h-48">
+            <div className="w-7 h-7 border-4 border-brand-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
 
-          {/* 🔥 VENDOR */}
-          <Route
-            path="/vendor"
-            element={
-              <ProtectedRoute role="vendor">
-                <VendorLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<VendorDashboard />} />
-            <Route path="analytics" element={<VendorAnalytics />} />
-            <Route path="documents" element={<VendorDocuments />} />
-            <Route path="notifications" element={<VendorNotifications />} />
-            <Route path="payments" element={<VendorPayments />} />
-            <Route path="profile" element={<VendorProfile />} />
-            <Route path="ratings" element={<VendorRatings />} />
-            <Route path="settings" element={<VendorSettings />} />
-            <Route path="tasks" element={<VendorTasks />} />
-          </Route>
+              <thead>
+                <tr className="border-b bg-slate-50/60">
+                  {['Vendor', 'Company', 'Phone', 'GST', 'Status', 'Registered', 'Action'].map(h => (
+                    <th key={h} className="text-left px-4 py-3 text-xs text-slate-500 uppercase">{h}</th>
+                  ))}
+                </tr>
+              </thead>
 
-          {/* 🔥 ADMIN */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<AdminDashboard />} />
+              <tbody>
+                {vendors.map(v => (
+                  <tr key={v._id} className="hover:bg-slate-50">
 
-            {/* Vendors List */}
-            <Route path="vendors" element={<Vendors />} />
+                    <td className="px-4 py-3">
+                      <div>
+                        <p className="font-600">{v.name}</p>
+                        <p className="text-xs text-gray-400">{v.email}</p>
+                      </div>
+                    </td>
 
-            {/* 🔥 Vendor Full Details Page */}
-            <Route path="vendors/:id" element={<VendorDetails />} />
+                    <td className="px-4 py-3">{v.companyName || '—'}</td>
+                    <td className="px-4 py-3">{v.phone || '—'}</td>
+                    <td className="px-4 py-3">{v.gstNumber || '—'}</td>
 
-            <Route path="tasks" element={<Tasks />} />
-            <Route path="payments" element={<Payments />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="documents" element={<Documents />} />
-            <Route path="evaluation" element={<Evaluation />} />
-          </Route>
+                    <td className="px-4 py-3">
+                      <span className={v.isApproved ? 'badge-approved' : 'badge-pending'}>
+                        {v.isApproved ? 'Approved' : 'Pending'}
+                      </span>
+                    </td>
 
-          {/* FALLBACK */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+                    <td className="px-4 py-3 text-xs">
+                      {new Date(v.createdAt).toLocaleDateString('en-IN')}
+                    </td>
 
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+                    {/* ✅ FINAL CHANGE */}
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => navigate(`/admin/vendors/${v._id}`)}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                      >
+                        View More
+                      </button>
+                    </td>
+
+                  </tr>
+                ))}
+              </tbody>
+
+            </table>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {pages > 1 && (
+          <div className="flex justify-between px-4 py-3 border-t">
+            <p className="text-xs">Page {page} of {pages}</p>
+            <div className="flex gap-2">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))}>
+                <ChevronLeft />
+              </button>
+              <button onClick={() => setPage(p => Math.min(pages, p + 1))}>
+                <ChevronRight />
+              </button>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </div>
   );
 }
