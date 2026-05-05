@@ -1,3 +1,4 @@
+console.log("PROFILE FILE LOADED 🔥");
 import { useState, useEffect } from "react";
 import api from "../utils/axios";
 import toast from "react-hot-toast";
