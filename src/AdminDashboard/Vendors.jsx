@@ -104,14 +104,14 @@ export default function AdminVendors() {
               </td>
 
               {/* ✅ VIEW MORE */}
-              <td className="p-2">
-                <button
-                  onClick={() => navigate(`/admin/vendor/${v._id}`)}
-                  className="bg-blue-500 text-white px-3 py-1 rounded"
-                >
-                  View More
-                </button>
-              </td>
+       <td className="p-2">
+  <button
+    onClick={() => navigate(`/admin/vendors/${v._id}`)}
+    className="bg-blue-500 text-white px-3 py-1 rounded"
+  >
+    View More
+  </button>
+</td>
             </tr>
           ))}
         </tbody>
