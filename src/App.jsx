@@ -130,7 +130,7 @@ export default function App() {
             <Route path="vendors" element={<Vendors />} />
 
             {/* 🔥 Vendor Full Details Page */}
-            <Route path="vendors/:id" element={<VendorDetails />} />
+            <Route path="vendordetails/:id" element={<VendorDetails />} />
 
             <Route path="tasks" element={<Tasks />} />
             <Route path="payments" element={<Payments />} />
