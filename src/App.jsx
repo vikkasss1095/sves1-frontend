@@ -37,19 +37,13 @@ import Evaluation from "./AdminDashboard/Evaluation.jsx";
 const ProtectedRoute = ({ children, role }) => {
   const { user, loading } = useAuth();
 
-  // ✅ WAIT for auth check
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[#0a0a0a]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  // ✅ WAIT UNTIL AUTH CHECK
+  if (loading) return null;
 
-  // ❌ not logged in
+  // ❌ NOT LOGGED IN
   if (!user) return <Navigate to="/login" replace />;
 
-  // ❌ wrong role
+  // ❌ WRONG ROLE
   if (role && user.role !== role) {
     return <Navigate to={user.role === "admin" ? "/admin" : "/vendor"} replace />;
   }
@@ -58,20 +52,14 @@ const ProtectedRoute = ({ children, role }) => {
 };
 
 
-// 🌐 PUBLIC ROUTE (FIXED)
+// 🌐 PUBLIC ROUTE
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
-  // ✅ WAIT (IMPORTANT FIX)
-  if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[#0a0a0a]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  // ✅ WAIT (VERY IMPORTANT)
+  if (loading) return null;
 
-  // ✅ already logged in
+  // ✅ ALREADY LOGGED IN
   if (user) {
     return <Navigate to={user.role === "admin" ? "/admin" : "/vendor"} replace />;
   }
@@ -87,6 +75,8 @@ export default function App() {
         <Toaster position="top-right" reverseOrder={false} />
 
         <Routes>
+
+          {/* DEFAULT */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
           {/* AUTH */}
@@ -137,6 +127,7 @@ export default function App() {
 
           {/* FALLBACK */}
           <Route path="*" element={<Navigate to="/login" replace />} />
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>

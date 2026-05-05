@@ -4,15 +4,9 @@ import api from "../utils/axios";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    // 🔥 INITIAL LOAD (FAST)
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
-
+  const [user, setUser] = useState(null);   // ❗ no initial localStorage
   const [loading, setLoading] = useState(true);
 
-  // ✅ LOAD USER ON REFRESH
   useEffect(() => {
     const loadUser = async () => {
       const token = localStorage.getItem("token");
@@ -24,13 +18,13 @@ export const AuthProvider = ({ children }) => {
 
       try {
         const res = await api.get("/auth/me", {
-          headers: {
-            "Cache-Control": "no-cache", // 🔥 FORCE FRESH
-          },
+          headers: { "Cache-Control": "no-cache" }
         });
 
+        // ✅ only trusted source = backend
         setUser(res.data.user);
         localStorage.setItem("user", JSON.stringify(res.data.user));
+
       } catch (err) {
         console.error("Auth verification failed");
 
