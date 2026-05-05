@@ -68,12 +68,7 @@ export default function VendorDashboard() {
           >
             Create Account
           </button>
-            <button
-              onClick={() => navigate("/vendor/profile")}
-              className="bg-red-500 text-white px-4 py-1.5 rounded-lg text-sm"
-            >
-              Create Account
-            </button>
+          
         </div>
       )}
 
