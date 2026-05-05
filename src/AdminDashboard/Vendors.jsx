@@ -1,22 +1,22 @@
-import { useEffect, useState, useCallback } from 'react';
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { useEffect, useState, useCallback } from "react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import toast from "react-hot-toast";
 import api from "../utils/axios";
 import { useNavigate } from "react-router-dom";
 
 const STATUS_TABS = [
-  { value: '',         label: 'All' },
-  { value: 'pending',  label: 'Pending' },
-  { value: 'approved', label: 'Approved' },
+  { value: "", label: "All" },
+  { value: "pending", label: "Pending" },
+  { value: "approved", label: "Approved" },
 ];
 
-export default function AdminVendors() {
+export default function Vendors() {
   const [vendors, setVendors] = useState([]);
-  const [total, setTotal]     = useState(0);
-  const [pages, setPages]     = useState(1);
-  const [page, setPage]       = useState(1);
-  const [search, setSearch]   = useState('');
-  const [status, setStatus]   = useState('');
+  const [total, setTotal] = useState(0);
+  const [pages, setPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -24,70 +24,74 @@ export default function AdminVendors() {
   const fetchVendors = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/admin/vendors', { params: { page, limit: 10, search, status } });
+      const { data } = await api.get("/admin/vendors", {
+        params: { page, limit: 10, search, status },
+      });
+
       setVendors(data.vendors);
       setTotal(data.total);
       setPages(data.pages);
     } catch {
-      toast.error('Failed to load vendors');
+      toast.error("Failed to load vendors");
     } finally {
       setLoading(false);
     }
   }, [page, search, status]);
 
-  useEffect(() => { fetchVendors(); }, [fetchVendors]);
+  useEffect(() => {
+    fetchVendors();
+  }, [fetchVendors]);
 
   return (
-    <div>
+    <div className="p-5">
 
       {/* HEADER */}
-      <div className="page-header">
-        <h1 className="page-title">Vendor Management</h1>
-        <p className="page-subtitle">{total} vendors registered</p>
-      </div>
+      <h1 className="text-xl font-bold mb-1">Vendor Management</h1>
+      <p className="text-sm text-gray-500 mb-4">
+        {total} vendors registered
+      </p>
 
-      {/* SEARCH */}
-      <div className="card p-4 mb-5 flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="input-field pl-9"
-          />
-        </div>
+      {/* SEARCH + FILTER */}
+      <div className="flex gap-3 mb-4">
+        <input
+          type="text"
+          placeholder="Search..."
+          className="border px-3 py-2 rounded w-full"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+        />
 
-        <div className="flex gap-2">
-          {STATUS_TABS.map(t => (
-            <button
-              key={t.value}
-              onClick={() => { setStatus(t.value); setPage(1); }}
-              className={`px-3 py-1 rounded ${
-                status === t.value
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-600"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        {STATUS_TABS.map((t) => (
+          <button
+            key={t.value}
+            onClick={() => {
+              setStatus(t.value);
+              setPage(1);
+            }}
+            className={`px-3 py-2 rounded ${
+              status === t.value
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
       {/* TABLE */}
-      <div className="card overflow-hidden">
+      <div className="bg-white rounded shadow overflow-hidden">
 
         {loading ? (
-          <div className="h-40 flex items-center justify-center">
-            Loading...
-          </div>
+          <div className="p-10 text-center">Loading...</div>
         ) : (
           <table className="w-full text-sm">
 
-            <thead>
-              <tr className="bg-gray-100">
+            <thead className="bg-gray-100">
+              <tr>
                 <th className="p-3 text-left">Vendor</th>
                 <th>Company</th>
                 <th>Phone</th>
@@ -99,14 +103,12 @@ export default function AdminVendors() {
             </thead>
 
             <tbody>
-              {vendors.map(v => (
+              {vendors.map((v) => (
                 <tr key={v._id} className="border-b">
 
                   <td className="p-3">
-                    <div>
-                      <p className="font-semibold">{v.name}</p>
-                      <p className="text-xs text-gray-500">{v.email}</p>
-                    </div>
+                    <p className="font-semibold">{v.name}</p>
+                    <p className="text-xs text-gray-500">{v.email}</p>
                   </td>
 
                   <td>{v.companyName}</td>
@@ -114,9 +116,13 @@ export default function AdminVendors() {
                   <td>{v.gstNumber}</td>
 
                   <td>
-                    <span className={`px-2 py-1 text-xs rounded ${
-                      v.isApproved ? "bg-green-100 text-green-600" : "bg-yellow-100 text-yellow-600"
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded text-xs ${
+                        v.isApproved
+                          ? "bg-green-100 text-green-600"
+                          : "bg-yellow-100 text-yellow-600"
+                      }`}
+                    >
                       {v.isApproved ? "Approved" : "Pending"}
                     </span>
                   </td>
@@ -125,11 +131,13 @@ export default function AdminVendors() {
                     {new Date(v.createdAt).toLocaleDateString()}
                   </td>
 
-                  {/* 🔥 ONLY CHANGE HERE */}
+                  {/* 🔥 FINAL BUTTON */}
                   <td className="text-center">
                     <button
-                      onClick={() => navigate(`/admin/vendors/${v._id}`)}
-                      className="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                      onClick={() =>
+                        navigate(`/admin/vendors/${v._id}`)
+                      }
+                      className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
                     >
                       View More
                     </button>
@@ -138,25 +146,25 @@ export default function AdminVendors() {
                 </tr>
               ))}
             </tbody>
-
           </table>
         )}
 
         {/* PAGINATION */}
         {pages > 1 && (
           <div className="flex justify-between p-3">
-            <button onClick={() => setPage(p => Math.max(1, p - 1))}>
+            <button onClick={() => setPage((p) => Math.max(1, p - 1))}>
               <ChevronLeft />
             </button>
 
-            <span>Page {page} / {pages}</span>
+            <span>
+              Page {page} / {pages}
+            </span>
 
-            <button onClick={() => setPage(p => Math.min(pages, p + 1))}>
+            <button onClick={() => setPage((p) => Math.min(pages, p + 1))}>
               <ChevronRight />
             </button>
           </div>
         )}
-
       </div>
     </div>
   );
