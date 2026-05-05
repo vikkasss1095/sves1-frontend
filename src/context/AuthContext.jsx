@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadUser = async () => {
       const token = localStorage.getItem("token");
-      
+
       if (!token) {
         setLoading(false);
         return;
@@ -18,9 +18,11 @@ export const AuthProvider = ({ children }) => {
 
       try {
         const res = await api.get("/auth/me");
-        setUser(res.data.user);
+
+        // 🔥 FIX (IMPORTANT)
+        setUser(res.data); // ❌ pehle res.data.user tha
       } catch (err) {
-        console.error("Auth verification failed");
+        console.log("Auth failed");
         localStorage.removeItem("token");
         setUser(null);
       } finally {
