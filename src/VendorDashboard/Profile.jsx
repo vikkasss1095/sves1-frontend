@@ -487,38 +487,74 @@ export default function VendorProfile() {
   const removeEdu = (i) =>
     setForm((f) => ({ ...f, education: f.education.filter((_, idx) => idx !== i) }));
 
-  const handleSubmit = async () => {
-    if (!validate()) return;
-    // Build FormData for API
-    const fd = new FormData();
-    // Flat fields
-    const plain = { ...form };
-    delete plain.profilePhoto; delete plain.resume;
-    delete plain.companyLogo; delete plain.businessLicense;
-    delete plain.photoPreview; delete plain.resumeName;
-    delete plain.companyLogoName; delete plain.businessLicenseName;
-    delete plain.skillInput; delete plain.confirmPassword;
-    fd.append("data", JSON.stringify(plain));
-    if (form.profilePhoto) fd.append("profilePhoto", form.profilePhoto);
-    if (form.resume) fd.append("resume", form.resume);
-    if (form.companyLogo) fd.append("companyLogo", form.companyLogo);
-    if (form.businessLicense) fd.append("businessLicense", form.businessLicense);
+ const handleSubmit = async () => {
+  if (!validate()) return;
 
-    try {
-      const res = await fetch("https://sves1-backend.onrender.com/api/vendor/profile", {
-        method: "POST",
-        body: fd,
-      });
-      if (res.ok) setSubmitted(true);
-      else {
-        const d = await res.json();
-        alert(d.message || "Registration failed");
-      }
-    } catch {
-      // For demo: just show success
-      setSubmitted(true);
+  try {
+    const token = localStorage.getItem("token");
+
+    const fd = new FormData();
+
+    // Clone form object
+    const plain = { ...form };
+
+    // Remove files from JSON object
+    delete plain.profilePhoto;
+    delete plain.resume;
+    delete plain.companyLogo;
+    delete plain.businessLicense;
+
+    // Remove preview/file helper fields
+    delete plain.photoPreview;
+    delete plain.resumeName;
+    delete plain.companyLogoName;
+    delete plain.businessLicenseName;
+
+    delete plain.skillInput;
+    delete plain.confirmPassword;
+
+    // Add JSON data
+    fd.append("data", JSON.stringify(plain));
+
+    // Add files separately
+    if (form.profilePhoto) {
+      fd.append("profilePhoto", form.profilePhoto);
     }
-  };
+
+    if (form.resume) {
+      fd.append("resume", form.resume);
+    }
+
+    if (form.companyLogo) {
+      fd.append("companyLogo", form.companyLogo);
+    }
+
+    if (form.businessLicense) {
+      fd.append("businessLicense", form.businessLicense);
+    }
+
+    // API Call
+    const res = await api.post("/vendor/profile", fd, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    console.log("SUCCESS:", res.data);
+
+    toast.success("Vendor Profile Submitted");
+
+    setSubmitted(true);
+
+  } catch (err) {
+    console.log("ERROR:", err.response?.data || err.message);
+
+    toast.error(
+      err.response?.data?.message || "Failed to submit profile"
+    );
+  }
+};
 
   const score = calcScore();
 
