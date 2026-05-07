@@ -574,12 +574,8 @@ export default function VendorProfile() {
     <div style={S.page}>
       {/* Topbar */}
       <div style={S.topbar}>
-        <div style={S.logo}>SVES<span style={S.logoSpan}>1</span></div>
-        <div style={S.topbarRight}>
-         <h1 className="text-3xl font-bold text-slate-800">
-          Welcome back, {user?.name?.split(" ")[0]} 👋
-        </h1>
-        </div>
+        <div style={S.logo}>Complete your profile <span style={S.logoSpan}></span></div>
+        
       </div>
 
       <div style={S.container}>
