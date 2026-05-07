@@ -584,9 +584,9 @@ export default function VendorProfile() {
       color: "#0a66c2",
     }}
   >
-      <p className="text-sm font-medium text-slate-800 truncate">
-              {user?.name}
-            </p>
+       <h1 className="text-3xl font-bold text-slate-800">
+          Welcome back, {user?.name?.split(" ")[0]} 👋
+        </h1>
   </div>
 </div>
       </div>
