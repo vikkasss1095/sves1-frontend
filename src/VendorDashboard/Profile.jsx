@@ -574,11 +574,19 @@ export default function VendorProfile() {
     <div style={S.page}>
       {/* Topbar */}
       <div style={S.topbar}>
-        {/* <div style={S.logo}>SVES<span style={S.logoSpan}>1</span></div>
-        <div style={S.topbarRight}>
-          Already have an account?
-          <a href="/login" style={S.topbarLink}>Sign in</a>
-        </div> */}
+        <div style={S.topbar}>
+  <div
+    style={{
+      width: "100%",
+      textAlign: "center",
+      fontSize: "24px",
+      fontWeight: "700",
+      color: "#0a66c2",
+    }}
+  >
+    Hello {form.firstName || "Vendor"} 👋 Complete Your Profile
+  </div>
+</div>
       </div>
 
       <div style={S.container}>
