@@ -584,7 +584,7 @@ export default function VendorProfile() {
       color: "#0a66c2",
     }}
   >
-    Hello {form.firstName || "Vendor"} 👋 Complete Your Profile
+    Hello {user?.username} 👋 Complete Your Profile
   </div>
 </div>
       </div>
